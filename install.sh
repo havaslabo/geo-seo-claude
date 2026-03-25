@@ -248,6 +248,11 @@ main() {
     [ -d "$INSTALL_DIR/scripts" ] && print_success "Utility scripts" || { print_error "Scripts missing"; VERIFY_OK=false; }
     [ -d "$INSTALL_DIR/schema" ] && print_success "Schema templates" || { print_error "Schema templates missing"; VERIFY_OK=false; }
 
+    if [ "$VERIFY_OK" = false ]; then
+        echo ""
+        print_warning "One or more files are missing. The install may be incomplete."
+    fi
+
     # ---- Print Summary ----
     echo ""
     echo -e "${GREEN}╔══════════════════════════════════════════╗${NC}"
