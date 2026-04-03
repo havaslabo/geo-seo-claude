@@ -53,7 +53,7 @@ def score_label(score: int) -> str:
 def format_eur(value) -> str:
     if not value:
         return "—"
-    return f"€{int(value):,}".replace(",", ".")
+    return f"¥{int(value):,}"
 
 def crm_stats(prospects: list[dict]) -> dict:
     total = len(prospects)

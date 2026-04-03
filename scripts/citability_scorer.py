@@ -163,12 +163,21 @@ def score_passage(text: str, heading: Optional[str] = None) -> dict:
     pct_count = len(re.findall(r"\d+(?:\.\d+)?%", text))
     sd_score += min(pct_count * 3, 6)
 
-    # Dollar amounts
-    dollar_count = len(re.findall(r"\$[\d,]+(?:\.\d+)?(?:\s*(?:million|billion|M|B|K))?", text))
+    # Currency amounts (yen, dollar, euro)
+    dollar_count = len(re.findall(
+        r"(?:\$[\d,]+(?:\.\d+)?(?:\s*(?:million|billion|M|B|K))?"
+        r"|¥[\d,]+(?:\.\d+)?(?:\s*(?:万|億|千))?"
+        r"|\d+(?:,\d{3})*(?:\.\d+)?\s*(?:万円|億円|千円|円))",
+        text
+    ))
     sd_score += min(dollar_count * 3, 5)
 
-    # Other numbers with context
-    number_count = len(re.findall(r"\b\d+(?:,\d{3})*(?:\.\d+)?\s+(?:users|customers|pages|sites|companies|businesses|people|percent|times|x\b)", text, re.IGNORECASE))
+    # Other numbers with context (English and Japanese units)
+    number_count = len(re.findall(
+        r"(?:\b\d+(?:,\d{3})*(?:\.\d+)?\s+(?:users|customers|pages|sites|companies|businesses|people|percent|times|x\b)"
+        r"|\d+(?:,\d{3})*(?:\.\d+)?\s*(?:人|社|件|店|か所|ヶ所|倍|割|分))",
+        text, re.IGNORECASE
+    ))
     sd_score += min(number_count * 2, 4)
 
     # Year references (indicates timeliness)

@@ -85,7 +85,7 @@ def score_bar(score: int, width: int = 20) -> Text:
 def format_eur(value: int | None) -> str:
     if not value:
         return "—"
-    return f"€{value:,.0f}".replace(",", ".")
+    return f"¥{value:,.0f}"
 
 
 # ── Load CRM ───────────────────────────────────────────────────────────

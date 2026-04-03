@@ -312,23 +312,23 @@ def header_footer(canvas, doc):
     # Header line
     canvas.setStrokeColor(ACCENT)
     canvas.setLineWidth(2)
-    canvas.line(50, letter[1] - 40, letter[0] - 50, letter[1] - 40)
+    canvas.line(50, A4[1] - 40, A4[0] - 50, A4[1] - 40)
 
     # Header text
     canvas.setFont(FONT_REGULAR, 8)
     canvas.setFillColor(TEXT_SECONDARY)
-    canvas.drawString(50, letter[1] - 35, "GEO-SEO 分析レポート")
+    canvas.drawString(50, A4[1] - 35, "GEO-SEO 分析レポート")
 
     # Footer
     canvas.setStrokeColor(lightgrey)
     canvas.setLineWidth(0.5)
-    canvas.line(50, 40, letter[0] - 50, 40)
+    canvas.line(50, 40, A4[0] - 50, 40)
 
     canvas.setFont(FONT_REGULAR, 8)
     canvas.setFillColor(TEXT_SECONDARY)
     canvas.drawString(50, 28, f"作成日：{datetime.now().strftime('%Y年%m月%d日')}")
-    canvas.drawRightString(letter[0] - 50, 28, f"{doc.page} ページ")
-    canvas.drawCentredString(letter[0] / 2, 28, "機密")
+    canvas.drawRightString(A4[0] - 50, 28, f"{doc.page} ページ")
+    canvas.drawCentredString(A4[0] / 2, 28, "機密")
 
     canvas.restoreState()
 
@@ -360,7 +360,7 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
 
     doc = SimpleDocTemplate(
         output_path,
-        pagesize=letter,
+        pagesize=A4,
         topMargin=55,
         bottomMargin=55,
         leftMargin=50,
@@ -628,7 +628,7 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
                     Paragraph("", cell_style),
                 ])
 
-        # Full page width: letter (612pt) - 50pt margins each side = 512pt
+        # Full page width: A4 (595pt) - 50pt margins each side = 495pt
         ct = Table(crawler_data, colWidths=[90, 110, 72, 240])
         ct_style = make_table_style()
         ct_style.add('VALIGN', (0, 0), (-1, -1), 'TOP')
