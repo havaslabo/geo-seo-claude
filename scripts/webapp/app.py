@@ -86,12 +86,12 @@ app.jinja_env.filters["score_label"] = score_label
 app.jinja_env.filters["format_eur"] = format_eur
 
 STATUS_META = {
-    "lead":     {"icon": "⬜", "badge": "secondary",  "label": "Lead"},
-    "audit":    {"icon": "🔍", "badge": "warning",    "label": "Audit"},
-    "proposal": {"icon": "📄", "badge": "info",       "label": "Proposal"},
-    "active":   {"icon": "✅", "badge": "success",    "label": "Active"},
-    "churned":  {"icon": "❌", "badge": "danger",     "label": "Churned"},
-    "lost":     {"icon": "💀", "badge": "dark",       "label": "Lost"},
+    "lead":     {"icon": "⬜", "badge": "secondary",  "label": "リード"},
+    "audit":    {"icon": "🔍", "badge": "warning",    "label": "監査中"},
+    "proposal": {"icon": "📄", "badge": "info",       "label": "提案書送付"},
+    "active":   {"icon": "✅", "badge": "success",    "label": "アクティブ"},
+    "churned":  {"icon": "❌", "badge": "danger",     "label": "解約"},
+    "lost":     {"icon": "💀", "badge": "dark",       "label": "失注"},
 }
 
 @app.template_filter("status_meta")

@@ -18,7 +18,7 @@ try:
     import requests
     from bs4 import BeautifulSoup
 except ImportError:
-    print("ERROR: Required packages not installed. Run: pip install -r requirements.txt")
+    print("エラー：必要なパッケージがインストールされていません。pip install -r requirements.txt を実行してください")
     sys.exit(1)
 
 DEFAULT_HEADERS = {
@@ -68,7 +68,7 @@ def validate_llmstxt(url: str) -> dict:
             if lines and lines[0].startswith("# "):
                 result["has_title"] = True
             else:
-                result["issues"].append("Missing title (should start with '# Site Name')")
+                result["issues"].append("タイトルがありません（'# サイト名' で始める必要があります）")
 
             # Check for description (> blockquote)
             for line in lines:
@@ -76,14 +76,14 @@ def validate_llmstxt(url: str) -> dict:
                     result["has_description"] = True
                     break
             if not result["has_description"]:
-                result["issues"].append("Missing description (use '> Brief description')")
+                result["issues"].append("説明文がありません（'> 簡単な説明' を追加してください）")
 
             # Check for sections (## headings)
             sections = [l for l in lines if l.startswith("## ")]
             result["section_count"] = len(sections)
             result["has_sections"] = len(sections) > 0
             if not result["has_sections"]:
-                result["issues"].append("No sections found (use '## Section Name')")
+                result["issues"].append("セクションがありません（'## セクション名' を追加してください）")
 
             # Check for links
             link_pattern = r"- \[.+\]\(.+\)"
@@ -91,7 +91,7 @@ def validate_llmstxt(url: str) -> dict:
             result["link_count"] = len(links)
             result["has_links"] = len(links) > 0
             if not result["has_links"]:
-                result["issues"].append("No page links found (use '- [Page Title](url): Description')")
+                result["issues"].append("ページリンクがありません（'- [ページタイトル](url): 説明' の形式で追加してください）")
 
             # Overall format validity
             result["format_valid"] = (
@@ -103,18 +103,18 @@ def validate_llmstxt(url: str) -> dict:
 
             # Suggestions
             if result["link_count"] < 5:
-                result["suggestions"].append("Consider adding more key pages (aim for 10-20)")
+                result["suggestions"].append("重要なページをさらに追加することを検討してください（目安：10〜20ページ）")
             if result["section_count"] < 2:
-                result["suggestions"].append("Add more sections to organize content types")
+                result["suggestions"].append("コンテンツの種類を整理するためにセクションを追加してください")
             if "contact" not in content.lower():
-                result["suggestions"].append("Add a Contact section with email and location")
+                result["suggestions"].append("メールアドレスと所在地を含む Contact セクションを追加してください")
             if "key fact" not in content.lower() and "about" not in content.lower():
-                result["suggestions"].append("Add key facts about your business/service")
+                result["suggestions"].append("ビジネス・サービスに関する重要な情報を追加してください")
 
         else:
-            result["issues"].append(f"llms.txt returned status {response.status_code}")
+            result["issues"].append(f"llms.txt がステータス {response.status_code} を返しました")
     except Exception as e:
-        result["issues"].append(f"Error fetching llms.txt: {str(e)}")
+        result["issues"].append(f"llms.txt の取得中にエラーが発生しました：{str(e)}")
 
     # Check llms-full.txt
     try:
@@ -144,7 +144,7 @@ def generate_llmstxt(url: str, max_pages: int = 30) -> dict:
         response = requests.get(url, headers=DEFAULT_HEADERS, timeout=30)
         soup = BeautifulSoup(response.text, "lxml")
     except Exception as e:
-        result["error"] = f"Failed to fetch homepage: {str(e)}"
+        result["error"] = f"ホームページの取得に失敗しました：{str(e)}"
         return result
 
     # Extract site name and description
@@ -271,8 +271,8 @@ def generate_llmstxt(url: str, max_pages: int = 30) -> dict:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python llmstxt_generator.py <url> [mode]")
-        print("Modes: validate (default), generate")
+        print("使用法：python llmstxt_generator.py <url> [mode]")
+        print("モード：validate（デフォルト）、generate")
         sys.exit(1)
 
     target_url = sys.argv[1]
@@ -283,7 +283,7 @@ if __name__ == "__main__":
     elif mode == "generate":
         data = generate_llmstxt(target_url)
     else:
-        print(f"Unknown mode: {mode}. Use 'validate' or 'generate'.")
+        print(f"不明なモードです：{mode}。'validate' または 'generate' を指定してください。")
         sys.exit(1)
 
     print(json.dumps(data, indent=2, default=str))

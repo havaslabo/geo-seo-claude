@@ -31,7 +31,7 @@ try:
     from rich.style import Style
     from rich.markup import escape
 except ImportError:
-    print("ERROR: rich is required. Run: pip install rich")
+    print("エラー：rich が必要です。pip install rich を実行してください")
     sys.exit(1)
 
 # ── Paths ─────────────────────────────────────────────────────────────
@@ -49,6 +49,15 @@ STATUS_STYLE = {
     "active":   ("✅", "bold green",      "green"),
     "churned":  ("❌", "dim red",         "red"),
     "lost":     ("💀", "dim red",         "red"),
+}
+
+STATUS_LABEL_JA = {
+    "lead":     "リード",
+    "audit":    "監査中",
+    "proposal": "提案書送付",
+    "active":   "アクティブ",
+    "churned":  "解約",
+    "lost":     "失注",
 }
 
 def score_style(score: int) -> tuple[str, str]:
@@ -82,7 +91,7 @@ def format_eur(value: int | None) -> str:
 # ── Load CRM ───────────────────────────────────────────────────────────
 def load_prospects() -> list[dict]:
     if not CRM_PATH.exists():
-        console.print(f"[red]CRM file not found:[/red] {CRM_PATH}")
+        console.print(f"[red]CRM ファイルが見つかりません：[/red] {CRM_PATH}")
         return []
     with open(CRM_PATH) as f:
         return json.load(f)
@@ -101,7 +110,7 @@ def view_summary(prospects: list[dict]):
         Panel(
             Align.center(
                 Text.from_markup(
-                    f"[bold white]{total}[/bold white]\n[dim]Total Prospects[/dim]"
+                    f"[bold white]{total}[/bold white]\n[dim]見込み客合計[/dim]"
                 )
             ),
             border_style="bright_blue",
@@ -110,7 +119,7 @@ def view_summary(prospects: list[dict]):
         Panel(
             Align.center(
                 Text.from_markup(
-                    f"[bold green]{active}[/bold green]\n[dim]Active Clients[/dim]"
+                    f"[bold green]{active}[/bold green]\n[dim]アクティブクライアント[/dim]"
                 )
             ),
             border_style="green",
@@ -128,7 +137,7 @@ def view_summary(prospects: list[dict]):
         Panel(
             Align.center(
                 Text.from_markup(
-                    f"[bold yellow]{format_eur(pipeline)}[/bold yellow]\n[dim]Pipeline (proposals)[/dim]"
+                    f"[bold yellow]{format_eur(pipeline)}[/bold yellow]\n[dim]パイプライン（提案書）[/dim]"
                 )
             ),
             border_style="yellow",
@@ -137,7 +146,7 @@ def view_summary(prospects: list[dict]):
         Panel(
             Align.center(
                 Text.from_markup(
-                    f"[bold]{avg_score}[/bold][dim]/100[/dim]\n[dim]Avg GEO Score[/dim]"
+                    f"[bold]{avg_score}[/bold][dim]/100[/dim]\n[dim]平均 GEO スコア[/dim]"
                 )
             ),
             border_style="magenta",
@@ -160,13 +169,13 @@ def view_prospect_table(prospects: list[dict]):
     )
 
     table.add_column("ID",         style="dim", width=9)
-    table.add_column("Company",    style="bold white", min_width=16)
-    table.add_column("Domain",     style="cyan", min_width=18)
-    table.add_column("Status",     justify="center", min_width=12)
-    table.add_column("GEO Score",  justify="left", min_width=26)
-    table.add_column("Audit",      justify="center", min_width=12)
+    table.add_column("会社名",    style="bold white", min_width=16)
+    table.add_column("ドメイン",     style="cyan", min_width=18)
+    table.add_column("ステータス",     justify="center", min_width=12)
+    table.add_column("GEO スコア",  justify="left", min_width=26)
+    table.add_column("監査日",      justify="center", min_width=12)
     table.add_column("MRR",        justify="right", min_width=10)
-    table.add_column("Proposal",   justify="center", min_width=10)
+    table.add_column("提案書",   justify="center", min_width=10)
 
     for p in sorted(prospects, key=lambda x: x.get("geo_score", 0)):
         pid     = p.get("id", "—")
@@ -179,7 +188,7 @@ def view_prospect_table(prospects: list[dict]):
         has_proposal = "✓" if p.get("proposal_file") else "—"
 
         icon, status_style, _ = STATUS_STYLE.get(status, ("?", "white", "white"))
-        status_text = Text(f"{icon} {status.upper()}", style=status_style)
+        status_text = Text(f"{icon} {STATUS_LABEL_JA.get(status, status.upper())}", style=status_style)
 
         table.add_row(
             pid,
@@ -199,7 +208,7 @@ def view_prospect_detail(prospects: list[dict], prospect_id: str):
     """Detailed view of a single prospect."""
     p = next((x for x in prospects if x.get("id") == prospect_id), None)
     if not p:
-        console.print(f"[red]Prospect not found:[/red] {prospect_id}")
+        console.print(f"[red]見込み客が見つかりません：[/red] {prospect_id}")
         return
 
     score = p.get("geo_score", 0)
@@ -222,22 +231,22 @@ def view_prospect_detail(prospects: list[dict], prospect_id: str):
     )
 
     info_lines = [
-        f"[dim]ID:[/dim]          {p.get('id', '—')}",
-        f"[dim]Status:[/dim]      {p.get('status', '—').upper()}",
-        f"[dim]Industry:[/dim]    {p.get('industry', '—')}",
-        f"[dim]Country:[/dim]     {p.get('country', '—')}",
-        f"[dim]Audit Date:[/dim]  {p.get('audit_date', '—')}",
-        f"[dim]MRR:[/dim]         {format_eur(p.get('monthly_value'))}",
-        f"[dim]Contract:[/dim]    {p.get('contract_months', '—')} months",
+        f"[dim]ID：[/dim]          {p.get('id', '—')}",
+        f"[dim]ステータス：[/dim]      {STATUS_LABEL_JA.get(p.get('status', ''), p.get('status', '—').upper())}",
+        f"[dim]業界：[/dim]    {p.get('industry', '—')}",
+        f"[dim]国：[/dim]     {p.get('country', '—')}",
+        f"[dim]監査日：[/dim]  {p.get('audit_date', '—')}",
+        f"[dim]MRR：[/dim]         {format_eur(p.get('monthly_value'))}",
+        f"[dim]契約期間：[/dim]    {p.get('contract_months', '—')} ヶ月",
     ]
     if p.get("contact_name"):
-        info_lines.append(f"[dim]Contact:[/dim]     {p['contact_name']}")
+        info_lines.append(f"[dim]担当者：[/dim]     {p['contact_name']}")
     if p.get("contact_email"):
-        info_lines.append(f"[dim]Email:[/dim]       {p['contact_email']}")
+        info_lines.append(f"[dim]メール：[/dim]       {p['contact_email']}")
 
     info_panel = Panel(
         "\n".join(info_lines),
-        title="Details",
+        title="詳細",
         border_style="bright_blue",
     )
 
@@ -249,13 +258,13 @@ def view_prospect_detail(prospects: list[dict], prospect_id: str):
     if p.get("audit_file"):
         audit_path = Path(p["audit_file"].replace("~", str(Path.home())))
         exists = "✓" if audit_path.exists() else "✗"
-        files.append(f"  {exists} [cyan]Audit:[/cyan]    {p['audit_file']}")
+        files.append(f"  {exists} [cyan]監査：[/cyan]    {p['audit_file']}")
     if p.get("proposal_file"):
         prop_path = Path(p["proposal_file"].replace("~", str(Path.home())))
         exists = "✓" if prop_path.exists() else "✗"
-        files.append(f"  {exists} [yellow]Proposal:[/yellow] {p['proposal_file']}")
+        files.append(f"  {exists} [yellow]提案書：[/yellow] {p['proposal_file']}")
     if files:
-        console.print(Panel("\n".join(files), title="Files", border_style="dim"))
+        console.print(Panel("\n".join(files), title="ファイル", border_style="dim"))
         console.print()
 
     # Notes
@@ -266,14 +275,14 @@ def view_prospect_detail(prospects: list[dict], prospect_id: str):
             date = note.get("date", "")[:10]
             text = escape(note.get("text", ""))
             note_text += f"[dim]{date}[/dim]  {text}\n\n"
-        console.print(Panel(note_text.rstrip(), title="Notes", border_style="dim"))
+        console.print(Panel(note_text.rstrip(), title="メモ", border_style="dim"))
 
 
 def view_pipeline(prospects: list[dict]):
     """Show pipeline by status."""
     statuses = ["lead", "audit", "proposal", "active", "churned", "lost"]
     console.print()
-    console.print(Rule("[bold]Pipeline by Status[/bold]", style="bright_blue"))
+    console.print(Rule("[bold]ステータス別パイプライン[/bold]", style="bright_blue"))
     console.print()
 
     for status in statuses:
@@ -282,7 +291,7 @@ def view_pipeline(prospects: list[dict]):
             continue
         icon, style, _ = STATUS_STYLE.get(status, ("?", "white", "white"))
         total_mrr = sum(p.get("monthly_value", 0) for p in group)
-        label = f"{icon} [bold]{status.upper()}[/bold] ({len(group)})  {format_eur(total_mrr)}/mo"
+        label = f"{icon} [bold]{STATUS_LABEL_JA.get(status, status.upper())}[/bold] ({len(group)})  {format_eur(total_mrr)}/月"
         console.print(f"  {label}", style=style)
         for p in group:
             score = p.get("geo_score", 0)
@@ -295,7 +304,7 @@ def view_pipeline(prospects: list[dict]):
 
 # ── Main ───────────────────────────────────────────────────────────────
 def main():
-    parser = argparse.ArgumentParser(description="GEO-SEO CRM Dashboard")
+    parser = argparse.ArgumentParser(description="GEO-SEO CRM ダッシュボード")
     parser.add_argument("--prospect", "-p", help="Show detail for a prospect ID")
     parser.add_argument("--pipeline", action="store_true", help="Show pipeline view")
     args = parser.parse_args()
@@ -328,7 +337,7 @@ def main():
         view_pipeline(prospects)
 
     console.print(
-        f"[dim]CRM: {CRM_PATH}   |   /geo audit <domain> to add prospects[/dim]\n"
+        f"[dim]CRM: {CRM_PATH}   |   /geo audit <domain> で見込み客を追加[/dim]\n"
     )
 
 

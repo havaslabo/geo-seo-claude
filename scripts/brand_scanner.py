@@ -22,7 +22,7 @@ try:
     import requests
     from bs4 import BeautifulSoup
 except ImportError:
-    print("ERROR: Required packages not installed. Run: pip install -r requirements.txt")
+    print("エラー：必要なパッケージがインストールされていません。pip install -r requirements.txt を実行してください")
     sys.exit(1)
 
 DEFAULT_HEADERS = {
@@ -265,8 +265,8 @@ def generate_brand_report(brand_name: str, domain: str = None) -> dict:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python brand_scanner.py <brand_name> [domain]")
-        print("Example: python brand_scanner.py 'Acme Corp' acmecorp.com")
+        print("使用法：python brand_scanner.py <brand_name> [domain]")
+        print("例：python brand_scanner.py 'Acme Corp' acmecorp.com")
         sys.exit(1)
 
     brand = sys.argv[1]

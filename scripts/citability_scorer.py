@@ -19,7 +19,7 @@ try:
     import requests
     from bs4 import BeautifulSoup
 except ImportError:
-    print("ERROR: Required packages not installed. Run: pip install -r requirements.txt")
+    print("エラー：必要なパッケージがインストールされていません。pip install -r requirements.txt を実行してください")
     sys.exit(1)
 
 
@@ -219,19 +219,19 @@ def score_passage(text: str, heading: Optional[str] = None) -> dict:
     # Determine grade
     if total >= 80:
         grade = "A"
-        label = "Highly Citable"
+        label = "引用されやすい"
     elif total >= 65:
         grade = "B"
-        label = "Good Citability"
+        label = "引用性が高い"
     elif total >= 50:
         grade = "C"
-        label = "Moderate Citability"
+        label = "引用性が中程度"
     elif total >= 35:
         grade = "D"
-        label = "Low Citability"
+        label = "引用性が低い"
     else:
         grade = "F"
-        label = "Poor Citability"
+        label = "引用性が不十分"
 
     return {
         "heading": heading,
@@ -334,8 +334,8 @@ def analyze_page_citability(url: str) -> dict:
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python citability_scorer.py <url>")
-        print("Returns JSON with citability analysis for all content blocks.")
+        print("使用法：python citability_scorer.py <url>")
+        print("すべてのコンテンツブロックの引用性分析を JSON で返します。")
         sys.exit(1)
 
     url = sys.argv[1]

@@ -43,8 +43,13 @@ try:
     from reportlab.graphics.charts.barcharts import VerticalBarChart
     from reportlab.graphics.charts.piecharts import Pie
     from reportlab.graphics import renderPDF
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+    pdfmetrics.registerFont(UnicodeCIDFont('HeiseiKakuGo-W5'))
+    FONT_REGULAR = 'HeiseiKakuGo-W5'
+    FONT_BOLD    = 'HeiseiKakuGo-W5'
 except ImportError:
-    print("ERROR: Required packages not installed. Run: pip install -r requirements.txt")
+    print("エラー：必要なパッケージがインストールされていません。pip install -r requirements.txt を実行してください")
     sys.exit(1)
 
 
@@ -82,15 +87,15 @@ def get_score_color(score):
 def get_score_label(score):
     """Return label based on score value."""
     if score >= 85:
-        return "Excellent"
+        return "優秀"
     elif score >= 70:
-        return "Good"
+        return "良好"
     elif score >= 55:
-        return "Moderate"
+        return "普通"
     elif score >= 40:
-        return "Below Average"
+        return "要改善"
     else:
-        return "Needs Attention"
+        return "要対応"
 
 
 def create_score_gauge(score, width=120, height=120):
@@ -109,12 +114,12 @@ def create_score_gauge(score, width=120, height=120):
 
     # Score text
     d.add(String(width/2, height/2 + 5, str(score),
-                 fontSize=24, fontName='Helvetica-Bold',
+                 fontSize=24, fontName=FONT_BOLD,
                  fillColor=TEXT_PRIMARY, textAnchor='middle'))
 
     # Label
     d.add(String(width/2, height/2 - 12, "/100",
-                 fontSize=10, fontName='Helvetica',
+                 fontSize=10, fontName=FONT_REGULAR,
                  fillColor=TEXT_SECONDARY, textAnchor='middle'))
 
     return d
@@ -133,7 +138,7 @@ def create_bar_chart(data, labels, width=400, height=200):
     chart.categoryAxis.categoryNames = labels
     chart.categoryAxis.labels.angle = 0
     chart.categoryAxis.labels.fontSize = 8
-    chart.categoryAxis.labels.fontName = 'Helvetica'
+    chart.categoryAxis.labels.fontName = FONT_REGULAR
     chart.valueAxis.valueMin = 0
     chart.valueAxis.valueMax = 100
     chart.valueAxis.valueStep = 20
@@ -164,7 +169,7 @@ def create_platform_chart(platforms, width=450, height=180):
 
         # Platform name
         d.add(String(label_x, y + 5, name,
-                     fontSize=9, fontName='Helvetica',
+                     fontSize=9, fontName=FONT_REGULAR,
                      fillColor=TEXT_PRIMARY, textAnchor='start'))
 
         # Background bar
@@ -180,7 +185,7 @@ def create_platform_chart(platforms, width=450, height=180):
 
         # Score text
         d.add(String(bar_x + bar_max_width + 10, y + 6, f"{score}/100",
-                     fontSize=9, fontName='Helvetica-Bold',
+                     fontSize=9, fontName=FONT_BOLD,
                      fillColor=TEXT_PRIMARY, textAnchor='start'))
 
     return d
@@ -192,7 +197,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='ReportTitle',
-        fontName='Helvetica-Bold',
+        fontName=FONT_BOLD,
         fontSize=28,
         textColor=PRIMARY,
         spaceAfter=6,
@@ -201,7 +206,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='ReportSubtitle',
-        fontName='Helvetica',
+        fontName=FONT_REGULAR,
         fontSize=14,
         textColor=TEXT_SECONDARY,
         spaceAfter=20,
@@ -210,7 +215,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='SectionHeader',
-        fontName='Helvetica-Bold',
+        fontName=FONT_BOLD,
         fontSize=18,
         textColor=PRIMARY,
         spaceBefore=20,
@@ -220,7 +225,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='SubHeader',
-        fontName='Helvetica-Bold',
+        fontName=FONT_BOLD,
         fontSize=13,
         textColor=ACCENT,
         spaceBefore=14,
@@ -230,7 +235,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='BodyText_Custom',
-        fontName='Helvetica',
+        fontName=FONT_REGULAR,
         fontSize=10,
         textColor=TEXT_PRIMARY,
         spaceBefore=4,
@@ -241,7 +246,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='SmallText',
-        fontName='Helvetica',
+        fontName=FONT_REGULAR,
         fontSize=8,
         textColor=TEXT_SECONDARY,
         spaceBefore=2,
@@ -250,7 +255,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='ScoreLabel',
-        fontName='Helvetica-Bold',
+        fontName=FONT_BOLD,
         fontSize=36,
         textColor=PRIMARY,
         alignment=TA_CENTER,
@@ -258,7 +263,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='HighlightBox',
-        fontName='Helvetica',
+        fontName=FONT_REGULAR,
         fontSize=10,
         textColor=TEXT_PRIMARY,
         backColor=LIGHT_BG,
@@ -270,7 +275,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='CriticalFinding',
-        fontName='Helvetica-Bold',
+        fontName=FONT_BOLD,
         fontSize=10,
         textColor=DANGER,
         spaceBefore=4,
@@ -279,7 +284,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='Recommendation',
-        fontName='Helvetica',
+        fontName=FONT_REGULAR,
         fontSize=10,
         textColor=TEXT_PRIMARY,
         leftIndent=15,
@@ -291,7 +296,7 @@ def build_styles():
 
     styles.add(ParagraphStyle(
         name='Footer',
-        fontName='Helvetica',
+        fontName=FONT_REGULAR,
         fontSize=8,
         textColor=TEXT_SECONDARY,
         alignment=TA_CENTER,
@@ -310,20 +315,20 @@ def header_footer(canvas, doc):
     canvas.line(50, letter[1] - 40, letter[0] - 50, letter[1] - 40)
 
     # Header text
-    canvas.setFont('Helvetica', 8)
+    canvas.setFont(FONT_REGULAR, 8)
     canvas.setFillColor(TEXT_SECONDARY)
-    canvas.drawString(50, letter[1] - 35, "GEO-SEO Analysis Report")
+    canvas.drawString(50, letter[1] - 35, "GEO-SEO 分析レポート")
 
     # Footer
     canvas.setStrokeColor(lightgrey)
     canvas.setLineWidth(0.5)
     canvas.line(50, 40, letter[0] - 50, 40)
 
-    canvas.setFont('Helvetica', 8)
+    canvas.setFont(FONT_REGULAR, 8)
     canvas.setFillColor(TEXT_SECONDARY)
-    canvas.drawString(50, 28, f"Generated {datetime.now().strftime('%B %d, %Y')}")
-    canvas.drawRightString(letter[0] - 50, 28, f"Page {doc.page}")
-    canvas.drawCentredString(letter[0] / 2, 28, "Confidential")
+    canvas.drawString(50, 28, f"作成日：{datetime.now().strftime('%Y年%m月%d日')}")
+    canvas.drawRightString(letter[0] - 50, 28, f"{doc.page} ページ")
+    canvas.drawCentredString(letter[0] / 2, 28, "機密")
 
     canvas.restoreState()
 
@@ -333,9 +338,9 @@ def make_table_style(header_color=PRIMARY):
     return TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), header_color),
         ('TEXTCOLOR', (0, 0), (-1, 0), WHITE),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTNAME', (0, 0), (-1, 0), FONT_BOLD),
         ('FONTSIZE', (0, 0), (-1, 0), 9),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTNAME', (0, 1), (-1, -1), FONT_REGULAR),
         ('FONTSIZE', (0, 1), (-1, -1), 9),
         ('TEXTCOLOR', (0, 1), (-1, -1), TEXT_PRIMARY),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
@@ -405,12 +410,12 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     elements.append(Spacer(1, 100))
 
     # Title
-    elements.append(Paragraph("GEO Analysis Report", styles['ReportTitle']))
+    elements.append(Paragraph("GEO 分析レポート", styles['ReportTitle']))
     elements.append(Spacer(1, 8))
 
     # Subtitle
     elements.append(Paragraph(
-        f"Generative Engine Optimization Audit for <b>{brand_name}</b>",
+        f"<b>{brand_name}</b> の Generative Engine Optimization 監査",
         styles['ReportSubtitle']
     ))
 
@@ -418,15 +423,15 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
 
     # Key details table
     details_data = [
-        ["Website", url],
-        ["Analysis Date", datetime.strptime(date, "%Y-%m-%d").strftime("%B %d, %Y") if "-" in date else date],
-        ["GEO Score", f"{geo_score}/100 — {get_score_label(geo_score)}"],
+        ["ウェブサイト", url],
+        ["分析日", datetime.strptime(date, "%Y-%m-%d").strftime("%Y年%m月%d日") if "-" in date else date],
+        ["GEO スコア", f"{geo_score}/100 — {get_score_label(geo_score)}"],
     ]
 
     details_table = Table(details_data, colWidths=[120, 350])
     details_table.setStyle(TableStyle([
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
+        ('FONTNAME', (0, 0), (0, -1), FONT_BOLD),
+        ('FONTNAME', (1, 0), (1, -1), FONT_REGULAR),
         ('FONTSIZE', (0, 0), (-1, -1), 11),
         ('TEXTCOLOR', (0, 0), (0, -1), ACCENT),
         ('TEXTCOLOR', (1, 0), (1, -1), TEXT_PRIMARY),
@@ -457,18 +462,16 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     # ============================================================
     # EXECUTIVE SUMMARY
     # ============================================================
-    elements.append(Paragraph("Executive Summary", styles['SectionHeader']))
+    elements.append(Paragraph("エグゼクティブサマリー", styles['SectionHeader']))
     elements.append(HRFlowable(width="100%", thickness=1, color=ACCENT, spaceAfter=12))
 
     if executive_summary:
         elements.append(Paragraph(executive_summary, styles['BodyText_Custom']))
     else:
         elements.append(Paragraph(
-            f"This report presents the findings of a comprehensive Generative Engine Optimization (GEO) "
-            f"audit conducted on <b>{brand_name}</b> ({url}). The analysis evaluated the website's readiness "
-            f"for AI-powered search engines including Google AI Overviews, ChatGPT, Perplexity, Gemini, "
-            f"and Bing Copilot. The overall GEO Readiness Score is <b>{geo_score}/100</b>, "
-            f"placing the site in the <b>{get_score_label(geo_score)}</b> tier.",
+            f"本レポートは、<b>{brand_name}</b>（{url}）に対して実施した包括的な Generative Engine Optimization（GEO）監査の結果を示しています。"
+            f"Google AI Overviews、ChatGPT、Perplexity、Gemini、Bing Copilot を含む AI 検索エンジンへの対応状況を評価しました。"
+            f"総合 GEO スコアは <b>{geo_score}/100</b> であり、<b>{get_score_label(geo_score)}</b> に分類されます。",
             styles['BodyText_Custom']
         ))
 
@@ -477,25 +480,25 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     # ============================================================
     # SCORE BREAKDOWN
     # ============================================================
-    elements.append(Paragraph("GEO Score Breakdown", styles['SectionHeader']))
+    elements.append(Paragraph("GEO スコア内訳", styles['SectionHeader']))
     elements.append(HRFlowable(width="100%", thickness=1, color=ACCENT, spaceAfter=12))
 
     score_data = [
-        ["Component", "Score", "Weight", "Weighted"],
-        ["AI Citability & Visibility", f"{ai_citability}/100", "25%", f"{round(ai_citability * 0.25, 1)}"],
-        ["Brand Authority Signals", f"{brand_authority}/100", "20%", f"{round(brand_authority * 0.20, 1)}"],
-        ["Content Quality & E-E-A-T", f"{content_eeat}/100", "20%", f"{round(content_eeat * 0.20, 1)}"],
-        ["Technical Foundations", f"{technical}/100", "15%", f"{round(technical * 0.15, 1)}"],
-        ["Structured Data", f"{schema_score}/100", "10%", f"{round(schema_score * 0.10, 1)}"],
-        ["Platform Optimization", f"{platform_optimization}/100", "10%", f"{round(platform_optimization * 0.10, 1)}"],
-        ["OVERALL", f"{geo_score}/100", "100%", f"{geo_score}"],
+        ["カテゴリ", "スコア", "重み", "加重スコア"],
+        ["AI 引用性・可視性", f"{ai_citability}/100", "25%", f"{round(ai_citability * 0.25, 1)}"],
+        ["ブランド権威シグナル", f"{brand_authority}/100", "20%", f"{round(brand_authority * 0.20, 1)}"],
+        ["コンテンツ品質・E-E-A-T", f"{content_eeat}/100", "20%", f"{round(content_eeat * 0.20, 1)}"],
+        ["技術的基盤", f"{technical}/100", "15%", f"{round(technical * 0.15, 1)}"],
+        ["構造化データ", f"{schema_score}/100", "10%", f"{round(schema_score * 0.10, 1)}"],
+        ["プラットフォーム最適化", f"{platform_optimization}/100", "10%", f"{round(platform_optimization * 0.10, 1)}"],
+        ["総合", f"{geo_score}/100", "100%", f"{geo_score}"],
     ]
 
     score_table = Table(score_data, colWidths=[200, 80, 60, 80])
     style = make_table_style()
 
     # Bold the last row
-    style.add('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold')
+    style.add('FONTNAME', (0, -1), (-1, -1), FONT_BOLD)
     style.add('BACKGROUND', (0, -1), (-1, -1), MEDIUM_BG)
 
     # Color-code score cells
@@ -511,7 +514,7 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
 
     # Score bar chart
     chart_scores = [ai_citability, brand_authority, content_eeat, technical, schema_score, platform_optimization]
-    chart_labels = ["Citability", "Brand", "Content", "Technical", "Schema", "Platform"]
+    chart_labels = ["引用性", "ブランド", "コンテンツ", "技術", "スキーマ", "プラットフォーム"]
     elements.append(create_bar_chart(chart_scores, chart_labels))
 
     elements.append(PageBreak())
@@ -519,12 +522,12 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     # ============================================================
     # AI PLATFORM READINESS
     # ============================================================
-    elements.append(Paragraph("AI Platform Readiness", styles['SectionHeader']))
+    elements.append(Paragraph("AI プラットフォーム対応状況", styles['SectionHeader']))
     elements.append(HRFlowable(width="100%", thickness=1, color=ACCENT, spaceAfter=12))
 
     elements.append(Paragraph(
-        "These scores reflect how likely your content is to be cited by each AI search platform. "
-        "A score below 50 indicates significant barriers to citation on that platform.",
+        "各スコアは、それぞれの AI 検索プラットフォームにコンテンツが引用される可能性を示しています。"
+        "50 未満のスコアは、そのプラットフォームでの引用に大きな障壁があることを意味します。",
         styles['BodyText_Custom']
     ))
     elements.append(Spacer(1, 10))
@@ -536,7 +539,7 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     elements.append(Spacer(1, 10))
 
     # Platform table
-    platform_table_data = [["AI Platform", "Score", "Status"]]
+    platform_table_data = [["AI プラットフォーム", "スコア", "ステータス"]]
     for name, score in platforms.items():
         status = get_score_label(score)
         platform_table_data.append([name, f"{score}/100", status])
@@ -555,12 +558,12 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     # ============================================================
     # AI CRAWLER ACCESS
     # ============================================================
-    elements.append(Paragraph("AI Crawler Access Status", styles['SectionHeader']))
+    elements.append(Paragraph("AI クローラーアクセス状況", styles['SectionHeader']))
     elements.append(HRFlowable(width="100%", thickness=1, color=ACCENT, spaceAfter=12))
 
     elements.append(Paragraph(
-        "Blocking AI crawlers prevents AI platforms from citing your content. "
-        "The table below shows which AI crawlers can currently access your site.",
+        "AI クローラーをブロックすると、AI プラットフォームがコンテンツを引用できなくなります。"
+        "以下の表に、現在サイトにアクセスできる AI クローラーの状況を示します。",
         styles['BodyText_Custom']
     ))
     elements.append(Spacer(1, 8))
@@ -568,35 +571,35 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     if crawler_access:
         # Use Paragraph objects for text wrapping in cells
         cell_style = ParagraphStyle(
-            'CrawlerCell', fontName='Helvetica', fontSize=9,
+            'CrawlerCell', fontName=FONT_REGULAR, fontSize=9,
             textColor=TEXT_PRIMARY, leading=12,
         )
         header_cell_style = ParagraphStyle(
-            'CrawlerHeaderCell', fontName='Helvetica-Bold', fontSize=9,
+            'CrawlerHeaderCell', fontName=FONT_BOLD, fontSize=9,
             textColor=WHITE, leading=12,
         )
         status_style_allowed = ParagraphStyle(
-            'StatusAllowed', fontName='Helvetica-Bold', fontSize=9,
+            'StatusAllowed', fontName=FONT_BOLD, fontSize=9,
             textColor=SUCCESS, leading=12,
         )
         status_style_blocked = ParagraphStyle(
-            'StatusBlocked', fontName='Helvetica-Bold', fontSize=9,
+            'StatusBlocked', fontName=FONT_BOLD, fontSize=9,
             textColor=DANGER, leading=12,
         )
         status_style_restricted = ParagraphStyle(
-            'StatusRestricted', fontName='Helvetica-Bold', fontSize=9,
+            'StatusRestricted', fontName=FONT_BOLD, fontSize=9,
             textColor=WARNING, leading=12,
         )
         status_style_default = ParagraphStyle(
-            'StatusDefault', fontName='Helvetica', fontSize=9,
+            'StatusDefault', fontName=FONT_REGULAR, fontSize=9,
             textColor=TEXT_PRIMARY, leading=12,
         )
 
         crawler_data = [[
-            Paragraph("Crawler", header_cell_style),
-            Paragraph("Platform", header_cell_style),
-            Paragraph("Status", header_cell_style),
-            Paragraph("Recommendation", header_cell_style),
+            Paragraph("クローラー", header_cell_style),
+            Paragraph("プラットフォーム", header_cell_style),
+            Paragraph("ステータス", header_cell_style),
+            Paragraph("推奨対応", header_cell_style),
         ]]
         for crawler_name, info in crawler_access.items():
             if isinstance(info, dict):
@@ -634,7 +637,7 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
         elements.append(ct)
     else:
         elements.append(Paragraph(
-            "<i>Run /geo crawlers to populate this section with AI crawler access data.</i>",
+            "<i>/geo crawlers を実行してクローラーアクセスデータを取得してください。</i>",
             styles['BodyText_Custom']
         ))
 
@@ -643,7 +646,7 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     # ============================================================
     # KEY FINDINGS
     # ============================================================
-    elements.append(Paragraph("Key Findings", styles['SectionHeader']))
+    elements.append(Paragraph("主な発見事項", styles['SectionHeader']))
     elements.append(HRFlowable(width="100%", thickness=1, color=ACCENT, spaceAfter=12))
 
     if findings:
@@ -670,7 +673,7 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
             elements.append(Spacer(1, 4))
     else:
         elements.append(Paragraph(
-            "<i>Run a full /geo audit to populate findings.</i>",
+            "<i>/geo audit を実行して発見事項を取得してください。</i>",
             styles['BodyText_Custom']
         ))
 
@@ -679,13 +682,13 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     # ============================================================
     # PRIORITIZED ACTION PLAN
     # ============================================================
-    elements.append(Paragraph("Prioritized Action Plan", styles['SectionHeader']))
+    elements.append(Paragraph("優先アクションプラン", styles['SectionHeader']))
     elements.append(HRFlowable(width="100%", thickness=1, color=ACCENT, spaceAfter=12))
 
     # Quick Wins
-    elements.append(Paragraph("Quick Wins (This Week)", styles['SubHeader']))
+    elements.append(Paragraph("クイックウィン（今週中）", styles['SubHeader']))
     elements.append(Paragraph(
-        "High impact, low effort — can be implemented immediately.",
+        "高インパクト・低工数 — すぐに実施できる施策です。",
         styles['SmallText']
     ))
 
@@ -710,9 +713,9 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     elements.append(Spacer(1, 12))
 
     # Medium-Term
-    elements.append(Paragraph("Medium-Term Improvements (This Month)", styles['SubHeader']))
+    elements.append(Paragraph("中期改善施策（今月中）", styles['SubHeader']))
     elements.append(Paragraph(
-        "Significant impact, moderate effort — requires content or technical changes.",
+        "高インパクト・中工数 — コンテンツまたは技術的な変更が必要です。",
         styles['SmallText']
     ))
 
@@ -737,9 +740,9 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     elements.append(Spacer(1, 12))
 
     # Strategic
-    elements.append(Paragraph("Strategic Initiatives (This Quarter)", styles['SubHeader']))
+    elements.append(Paragraph("戦略的施策（今四半期中）", styles['SubHeader']))
     elements.append(Paragraph(
-        "Long-term competitive advantage — requires ongoing investment.",
+        "長期的な競争優位 — 継続的な投資が必要です。",
         styles['SmallText']
     ))
 
@@ -766,49 +769,48 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     # ============================================================
     # METHODOLOGY & GLOSSARY
     # ============================================================
-    elements.append(Paragraph("Appendix: Methodology", styles['SectionHeader']))
+    elements.append(Paragraph("付録：調査方法", styles['SectionHeader']))
     elements.append(HRFlowable(width="100%", thickness=1, color=ACCENT, spaceAfter=12))
 
     elements.append(Paragraph(
-        f"This GEO audit was conducted on {date} analyzing {url}. "
-        "The analysis evaluated the website across six dimensions: AI Citability & Visibility (25%), "
-        "Brand Authority Signals (20%), Content Quality & E-E-A-T (20%), Technical Foundations (15%), "
-        "Structured Data (10%), and Platform Optimization (10%).",
+        f"本 GEO 監査は {date} に {url} を対象として実施しました。"
+        "分析は、AI 引用性・可視性（25%）、ブランド権威シグナル（20%）、コンテンツ品質・E-E-A-T（20%）、"
+        "技術的基盤（15%）、構造化データ（10%）、プラットフォーム最適化（10%）の6つの観点から評価しました。",
         styles['BodyText_Custom']
     ))
 
     elements.append(Spacer(1, 8))
 
     elements.append(Paragraph(
-        "<b>Platforms assessed:</b> Google AI Overviews, ChatGPT Web Search, Perplexity AI, "
-        "Google Gemini, Bing Copilot",
+        "<b>評価対象プラットフォーム：</b> Google AI Overviews、ChatGPT Web Search、Perplexity AI、"
+        "Google Gemini、Bing Copilot",
         styles['BodyText_Custom']
     ))
 
     elements.append(Paragraph(
-        "<b>Standards referenced:</b> Google Search Quality Rater Guidelines (Dec 2025), "
-        "Schema.org specification, Core Web Vitals (2026 thresholds), "
-        "llms.txt emerging standard, RSL 1.0 licensing framework",
+        "<b>参照規格：</b> Google Search Quality Rater Guidelines（2025年12月版）、"
+        "Schema.org 仕様、Core Web Vitals（2026年基準）、"
+        "llms.txt 新興標準、RSL 1.0 ライセンスフレームワーク",
         styles['BodyText_Custom']
     ))
 
     elements.append(Spacer(1, 16))
 
     # Glossary
-    elements.append(Paragraph("Glossary", styles['SubHeader']))
+    elements.append(Paragraph("用語集", styles['SubHeader']))
 
     glossary = [
-        ["Term", "Definition"],
-        ["GEO", "Generative Engine Optimization — optimizing content for AI search citation"],
-        ["AIO", "AI Overviews — Google's AI-generated answer boxes in search results"],
-        ["E-E-A-T", "Experience, Expertise, Authoritativeness, Trustworthiness"],
-        ["SSR", "Server-Side Rendering — generating HTML on the server for crawler access"],
-        ["CWV", "Core Web Vitals — Google's page experience metrics (LCP, INP, CLS)"],
-        ["INP", "Interaction to Next Paint — responsiveness metric (replaced FID March 2024)"],
-        ["JSON-LD", "JavaScript Object Notation for Linked Data — preferred structured data format"],
-        ["sameAs", "Schema.org property linking an entity to its profiles on other platforms"],
-        ["llms.txt", "Proposed standard file for guiding AI systems about site content"],
-        ["IndexNow", "Protocol for instantly notifying search engines of content changes"],
+        ["用語", "定義"],
+        ["GEO", "Generative Engine Optimization — AI 検索での引用を最適化する手法"],
+        ["AIO", "AI Overviews — Google の検索結果上部に表示される AI 生成回答ボックス"],
+        ["E-E-A-T", "経験・専門性・権威性・信頼性（Google のコンテンツ品質基準）"],
+        ["SSR", "サーバーサイドレンダリング — クローラーがアクセスできる HTML をサーバーで生成すること"],
+        ["CWV", "Core Web Vitals — Google のページ体験指標（LCP、INP、CLS）"],
+        ["INP", "Interaction to Next Paint — 応答性指標（2024年3月に FID から移行）"],
+        ["JSON-LD", "JavaScript Object Notation for Linked Data — 推奨される構造化データ形式"],
+        ["sameAs", "エンティティを他プラットフォームのプロフィールにリンクする Schema.org プロパティ"],
+        ["llms.txt", "AI システムにサイトコンテンツを案内するための提案標準ファイル"],
+        ["IndexNow", "コンテンツ更新を検索エンジンに即時通知するプロトコル"],
     ]
 
     gt = Table(glossary, colWidths=[80, 380])
@@ -820,9 +822,9 @@ def generate_report(data, output_path="GEO-REPORT.pdf"):
     # Footer disclaimer
     elements.append(HRFlowable(width="100%", thickness=0.5, color=lightgrey, spaceAfter=8))
     elements.append(Paragraph(
-        "This report was generated by the GEO-SEO Claude Code Analysis Tool. "
-        "Scores and recommendations are based on automated analysis and industry benchmarks. "
-        "Results should be validated with platform-specific testing.",
+        "本レポートは GEO-SEO Claude Code 分析ツールによって生成されました。"
+        "スコアおよび推奨事項は、自動分析と業界ベンチマークに基づいています。"
+        "結果は各プラットフォームでの実際のテストによって検証することをお勧めします。",
         styles['SmallText']
     ))
 
