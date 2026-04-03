@@ -1,0 +1,93 @@
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "https://YOURDOMAIN.com/#localbusiness",
+  "name": "YOUR_BUSINESS_NAME",
+  "alternateName": "YOUR_BUSINESS_NAME_READING",
+  "url": "https://YOURDOMAIN.com",
+  "image": "https://YOURDOMAIN.com/images/storefront.jpg",
+  "description": "YOUR_BUSINESS_DESCRIPTION",
+  "telephone": "0X-XXXX-XXXX",
+  "email": "contact@YOURDOMAIN.com",
+  "priceRange": "¥¥",
+  "address": {
+    "@type": "PostalAddress",
+    "postalCode": "1XX-XXXX",
+    "addressCountry": "JP",
+    "addressRegion": "東京都",
+    "addressLocality": "渋谷区",
+    "streetAddress": "道玄坂X丁目XX-XX YOUR_BUILDING名XXX号室"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "35.XXXXXX",
+    "longitude": "139.XXXXXX"
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "09:00",
+      "closes": "18:00"
+    },
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Saturday"],
+      "opens": "10:00",
+      "closes": "17:00"
+    }
+  ],
+  "areaServed": {
+    "@type": "AdministrativeArea",
+    "name": "東京都渋谷区"
+  },
+  "sameAs": [
+    "https://maps.app.goo.gl/YOUR_GOOGLE_MAPS_URL",
+    "https://tabelog.com/tokyo/AXXXXXXXX/",
+    "https://www.hotpepper.jp/strJ000XXXXXX/",
+    "https://www.instagram.com/YOUR_INSTAGRAM/",
+    "https://twitter.com/YOUR_TWITTER/",
+    "https://www.facebook.com/YOUR_FACEBOOK/",
+    "https://www.youtube.com/@YOUR_YOUTUBE/",
+    "https://www.linkedin.com/company/YOUR_LINKEDIN/"
+  ],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.5",
+    "reviewCount": "XX",
+    "bestRating": "5"
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "サービス一覧",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "SERVICE_NAME_1",
+          "description": "SERVICE_DESCRIPTION_1"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": "SERVICE_NAME_2",
+          "description": "SERVICE_DESCRIPTION_2"
+        }
+      }
+    ]
+  },
+  "potentialAction": {
+    "@type": "ReserveAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://YOURDOMAIN.com/reserve"
+    },
+    "result": {
+      "@type": "Reservation",
+      "name": "予約"
+    }
+  }
+}

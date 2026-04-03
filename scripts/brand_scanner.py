@@ -191,6 +191,150 @@ def check_linkedin_presence(brand_name: str) -> dict:
     return result
 
 
+def check_x_presence(brand_name: str) -> dict:
+    """Check brand presence on X (formerly Twitter)."""
+    result = {
+        "platform": "X (Twitter)",
+        "correlation": "High",
+        "weight": "20%",
+        "note": "日本はX利用率が世界最高水準。AI引用との相関も高い",
+        "has_official_account": False,
+        "search_url": f"https://x.com/search?q={quote_plus(brand_name)}&src=typed_query",
+        "recommendations": [],
+    }
+
+    result["check_instructions"] = [
+        f"X（Twitter）で '{brand_name}' を検索して確認：",
+        "1. 公式アカウントが存在するか？（フォロワー数・認証バッジ）",
+        "2. ブランド名・商品名の言及ツイートがあるか？",
+        "3. 言及のセンチメント（ポジティブ・ネガティブ・中立）",
+        "4. 直近6ヶ月以内の言及か？",
+        "5. インフルエンサーや業界メディアによる言及があるか？",
+    ]
+
+    result["recommendations"] = [
+        "公式Xアカウントを開設・最適化する（プロフィール・ヘッダー・固定ツイート）",
+        "製品・サービスのアップデートを定期的に投稿する",
+        "業界関連のハッシュタグを活用してリーチを拡大する",
+        "ユーザーからの言及・質問に積極的に返信する",
+        "スキーマの sameAs プロパティに X アカウント URL を追加する",
+        "スペースや長文ポストで専門性をアピールする",
+    ]
+
+    return result
+
+
+def check_chiebukuro_presence(brand_name: str) -> dict:
+    """Check brand presence on Yahoo! Chiebukuro (Japan's leading Q&A platform)."""
+    result = {
+        "platform": "Yahoo!知恵袋",
+        "correlation": "High",
+        "weight": "15%",
+        "note": "日本最大のQ&Aプラットフォーム。AI検索が回答を引用するソースとして重要",
+        "has_mentions": False,
+        "search_url": f"https://chiebukuro.yahoo.co.jp/search?p={quote_plus(brand_name)}",
+        "recommendations": [],
+    }
+
+    result["check_instructions"] = [
+        f"Yahoo!知恵袋で '{brand_name}' を検索して確認：",
+        "1. ブランド・製品に関する質問投稿があるか？",
+        "2. 質問への回答の質・量はどうか？",
+        "3. ブランド公式または関係者が回答しているか？",
+        "4. ネガティブな投稿が上位に出ていないか？",
+        "5. カテゴリー（ビジネス・生活・健康など）のどこに多いか？",
+    ]
+
+    result["recommendations"] = [
+        "知恵袋でのブランド関連の質問を定期的にモニタリングする",
+        "誠実で有益な回答を投稿して専門性を示す（過度な宣伝は禁止）",
+        "よくある質問をまとめた FAQ ページをサイトに作成し、知恵袋から誘導する",
+        "ネガティブな質問には公式として丁寧に回答する",
+        "ブランドの公式知恵袋アカウントを取得・運用する",
+    ]
+
+    return result
+
+
+def check_japan_review_platforms(brand_name: str, industry: str = "") -> dict:
+    """Check brand presence on Japan-specific review and content platforms."""
+    result = {
+        "platform": "日本の専門プラットフォーム",
+        "weight": "10%",
+        "note": "日本のAI引用で参照されやすい国内プラットフォーム群",
+        "platforms_checked": {},
+        "recommendations": [],
+    }
+
+    platforms = {
+        "価格.com": f"https://kakaku.com/search_results/?query={quote_plus(brand_name)}",
+        "食べログ": f"https://tabelog.com/rst/search/Srt=D/sa={quote_plus(brand_name)}/",
+        "@cosme": f"https://www.cosme.net/search/item/search/q/{quote_plus(brand_name)}/",
+        "note.com": f"https://note.com/search?q={quote_plus(brand_name)}",
+        "Qiita": f"https://qiita.com/search?q={quote_plus(brand_name)}",
+        "Zenn": f"https://zenn.dev/search?q={quote_plus(brand_name)}",
+        "はてなブックマーク": f"https://b.hatena.ne.jp/search/text?q={quote_plus(brand_name)}",
+    }
+
+    result["platforms_checked"] = {
+        name: {
+            "search_url": url,
+            "check_instruction": f"「{brand_name}」を {name} で検索",
+        }
+        for name, url in platforms.items()
+    }
+
+    result["recommendations"] = [
+        "価格.com：製品・サービスを登録しレビューを集める（ECサイト・家電・サービス業に重要）",
+        "食べログ：飲食店・食品ブランドは必ずプロフィールを整備する",
+        "@cosme：美容・化粧品ブランドは公式ページを開設し成分・使い方情報を充実させる",
+        "note.com：代表・社員が業界知識を発信してブランドの専門性を示す",
+        "Qiita / Zenn：技術系ブランドはエンジニアによるアウトプットを奨励する",
+        "はてなブックマーク：良質なコンテンツを発信して自然にブックマークされる状態を作る",
+    ]
+
+    return result
+
+
+def check_google_business_profile(brand_name: str, domain: str = None) -> dict:
+    """Check Google Business Profile presence (critical for local businesses in Japan)."""
+    result = {
+        "platform": "Google ビジネスプロフィール",
+        "correlation": "High",
+        "weight": "15%",
+        "note": "地域ビジネスのAI検索での表示に直結。未登録はAI回答で不利になる",
+        "has_gbp": False,
+        "search_url": f"https://www.google.com/maps/search/{quote_plus(brand_name)}",
+        "recommendations": [],
+    }
+
+    # Check via Wikipedia API if the brand has a knowledge panel
+    if domain:
+        result["domain"] = domain
+
+    result["check_instructions"] = [
+        f"Google マップ・検索で '{brand_name}' を検索して確認：",
+        "1. Google ビジネスプロフィールが登録されているか？",
+        "2. 店舗情報（住所・電話・営業時間）が正確か？",
+        "3. 写真・投稿が最新の状態か？",
+        "4. Googleレビューの件数・評価はどうか？",
+        "5. Q&Aセクションに回答があるか？",
+        "6. Google ナレッジパネルが表示されるか？",
+    ]
+
+    result["recommendations"] = [
+        "Google ビジネスプロフィールを登録・オーナー確認する",
+        "NAP（名称・住所・電話番号）をウェブサイトと完全に一致させる",
+        "営業時間・定休日を常に最新状態に保つ",
+        "商品・サービスのカテゴリを詳細に設定する",
+        "週1回以上「投稿」機能で最新情報を発信する",
+        "Googleレビューへの返信を徹底する（AI の信頼性評価に影響）",
+        "LocalBusiness スキーマの sameAs に GBP の URL を追加する",
+    ]
+
+    return result
+
+
 def check_other_platforms(brand_name: str) -> dict:
     """Check brand presence on additional platforms."""
     result = {
@@ -230,34 +374,40 @@ def check_other_platforms(brand_name: str) -> dict:
     return result
 
 
-def generate_brand_report(brand_name: str, domain: str = None) -> dict:
-    """Generate a comprehensive brand mention report."""
+def generate_brand_report(brand_name: str, domain: str = None, industry: str = "") -> dict:
+    """Generate a comprehensive brand mention report (Japan-optimized)."""
     report = {
         "brand_name": brand_name,
         "domain": domain,
-        "analysis_date": "Generated by GEO-SEO Claude Tool",
-        "key_insight": "Brand mentions correlate 3x more strongly with AI visibility than backlinks (Ahrefs Dec 2025, 75K brands)",
+        "analysis_date": "GEO-SEO Claude ツールにより生成",
+        "key_insight": "ブランド言及はバックリンクの3倍 AI 可視性と相関する（Ahrefs 2025年12月・75,000ブランド調査）",
+        "market": "日本",
         "platforms": {},
         "overall_recommendations": [],
     }
 
     # Check all platforms
     report["platforms"]["youtube"] = check_youtube_presence(brand_name)
-    report["platforms"]["reddit"] = check_reddit_presence(brand_name)
+    report["platforms"]["x_twitter"] = check_x_presence(brand_name)
     report["platforms"]["wikipedia"] = check_wikipedia_presence(brand_name)
+    report["platforms"]["chiebukuro"] = check_chiebukuro_presence(brand_name)
     report["platforms"]["linkedin"] = check_linkedin_presence(brand_name)
+    report["platforms"]["reddit"] = check_reddit_presence(brand_name)
+    report["platforms"]["google_business_profile"] = check_google_business_profile(brand_name, domain)
+    report["platforms"]["japan_platforms"] = check_japan_review_platforms(brand_name, industry)
     report["platforms"]["other"] = check_other_platforms(brand_name)
 
-    # Overall recommendations
+    # Overall recommendations (Japan-focused)
     report["overall_recommendations"] = [
-        "Priority 1: YouTube — highest correlation (0.737) with AI citations. Create educational content.",
-        "Priority 2: Reddit — build authentic presence in industry subreddits. No marketing speak.",
-        "Priority 3: Wikipedia — establish notability through press coverage, then create/improve entry.",
-        "Priority 4: LinkedIn — thought leadership content from founders and employees.",
-        "Priority 5: Review platforms — G2, Trustpilot, Capterra for social proof signals.",
-        "Cross-platform: Ensure consistent NAP (Name, Address, Phone) across all platforms.",
-        "Schema markup: Add sameAs property linking to ALL platform profiles.",
-        "Monitor: Set up brand mention alerts across all platforms.",
+        "優先度1：YouTube — AI引用との相関が最も高い（0.737）。教育・解説コンテンツを継続的に発信する",
+        "優先度2：X（Twitter）— 日本はX利用率が世界最高水準。ブランドアカウントを運用し言及を増やす",
+        "優先度3：Yahoo!知恵袋 — 日本のAI検索が多く参照するQ&Aソース。質問への回答で専門性を示す",
+        "優先度4：Wikipedia / Wikidata — プレスカバレッジを積み上げてエントリーを作成・充実させる",
+        "優先度5：Google ビジネスプロフィール — 地域ビジネスは登録・最適化が必須",
+        "優先度6：業界特化プラットフォーム — 価格.com・食べログ・Qiita など業種に合ったサイトに展開する",
+        "共通：全プラットフォームで NAP（名称・住所・電話番号）を統一する",
+        "スキーマ：sameAs プロパティに全プラットフォームの URL を追加する",
+        "モニタリング：ブランド名のアラートを設定し言及を継続的に把握する",
     ]
 
     return report

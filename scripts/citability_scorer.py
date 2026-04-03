@@ -23,10 +23,22 @@ except ImportError:
     sys.exit(1)
 
 
+def is_japanese_text(text: str) -> bool:
+    """Return True if the text is predominantly Japanese (hiragana/katakana/kanji)."""
+    jp_chars = len(re.findall(r'[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uff66-\uff9f]', text))
+    total_chars = len(text.replace(' ', '').replace('\n', '').replace('\t', ''))
+    return total_chars > 0 and jp_chars / total_chars >= 0.2
+
+
 def score_passage(text: str, heading: Optional[str] = None) -> dict:
-    """Score a single passage for AI citability (0-100)."""
+    """Score a single passage for AI citability (0-100).
+    Supports both English and Japanese text with language-appropriate heuristics."""
+    is_ja = is_japanese_text(text)
     words = text.split()
     word_count = len(words)
+    # For Japanese, character count / 2 is a rough word-count equivalent
+    char_count = len(text.replace(' ', '').replace('\n', ''))
+    effective_word_count = char_count // 2 if is_ja else word_count
 
     scores = {
         "answer_block_quality": 0,
@@ -39,118 +51,207 @@ def score_passage(text: str, heading: Optional[str] = None) -> dict:
     # === 1. Answer Block Quality (30%) ===
     abq_score = 0
 
-    # Check for definition patterns ("X is...", "X refers to...", "X means...")
-    definition_patterns = [
-        r"\b\w+\s+is\s+(?:a|an|the)\s",
-        r"\b\w+\s+refers?\s+to\s",
-        r"\b\w+\s+means?\s",
-        r"\b\w+\s+(?:can be |are )?defined\s+as\s",
-        r"\bin\s+(?:simple|other)\s+(?:terms|words)\s*,",
-    ]
-    for pattern in definition_patterns:
-        if re.search(pattern, text, re.IGNORECASE):
-            abq_score += 15
-            break
-
-    # Check if answer appears early (first 60 words)
-    first_60_words = " ".join(words[:60])
-    if any(
-        re.search(p, first_60_words, re.IGNORECASE)
-        for p in [
-            r"\b(?:is|are|was|were|means?|refers?)\b",
-            r"\d+%",
-            r"\$[\d,]+",
-            r"\d+\s+(?:million|billion|thousand)",
+    if is_ja:
+        # Japanese definition patterns: 〜とは、〜です。〜は〜を指す。〜のことです。
+        ja_definition_patterns = [
+            r'[\u3040-\u9fff]+とは[、,\s]',
+            r'[\u3040-\u9fff]+(?:とは|というのは)[^\。]*(?:です|ます|である)',
+            r'[\u3040-\u9fff]+を指(?:す|します)',
+            r'[\u3040-\u9fff]+のことです',
+            r'[\u3040-\u9fff]+とも呼ばれ',
         ]
-    ):
-        abq_score += 15
+        for pattern in ja_definition_patterns:
+            if re.search(pattern, text):
+                abq_score += 15
+                break
 
-    # Question-based heading bonus
-    if heading and heading.endswith("?"):
-        abq_score += 10
+        # Check if answer appears early (first ~120 characters)
+        first_120_chars = text[:120]
+        if any(
+            re.search(p, first_120_chars)
+            for p in [
+                r'\d+(?:\.\d+)?%',
+                r'¥[\d,]+',
+                r'\d+(?:,\d{3})*(?:\.\d+)?\s*(?:万円|億円|円)',
+                r'\d+(?:,\d{3})*\s*(?:人|社|件|店|倍)',
+                r'(?:です|ます|である)[。、]',
+            ]
+        ):
+            abq_score += 15
 
-    # Clear, direct sentence structure
-    sentences = re.split(r"[.!?]+", text)
-    short_clear_sentences = sum(
-        1 for s in sentences if 5 <= len(s.split()) <= 25
-    )
-    if sentences:
-        clarity_ratio = short_clear_sentences / len(sentences)
-        abq_score += int(clarity_ratio * 10)
+        # Japanese question-based heading
+        if heading and (heading.endswith('？') or heading.endswith('?') or
+                        re.search(r'(?:とは|でしょうか|ますか|ますか？|ですか)$', heading)):
+            abq_score += 10
 
-    # Has specific, quotable claim
-    if re.search(
-        r"(?:according to|research shows|studies? (?:show|indicate|suggest|found)|data (?:shows|indicates|suggests))",
-        text,
-        re.IGNORECASE,
-    ):
-        abq_score += 10
+        # Sentence clarity for Japanese (split by 。！？)
+        sentences = re.split(r'[。！？]+', text)
+        short_clear_sentences = sum(
+            1 for s in sentences if 10 <= len(s) <= 100
+        )
+        if sentences:
+            clarity_ratio = short_clear_sentences / len(sentences)
+            abq_score += int(clarity_ratio * 10)
+
+        # Quotable claim with source
+        if re.search(r'(?:によると|によれば|の調査|の研究|のデータ|調査では|研究では)', text):
+            abq_score += 10
+    else:
+        # Check for definition patterns ("X is...", "X refers to...", "X means...")
+        definition_patterns = [
+            r"\b\w+\s+is\s+(?:a|an|the)\s",
+            r"\b\w+\s+refers?\s+to\s",
+            r"\b\w+\s+means?\s",
+            r"\b\w+\s+(?:can be |are )?defined\s+as\s",
+            r"\bin\s+(?:simple|other)\s+(?:terms|words)\s*,",
+        ]
+        for pattern in definition_patterns:
+            if re.search(pattern, text, re.IGNORECASE):
+                abq_score += 15
+                break
+
+        # Check if answer appears early (first 60 words)
+        first_60_words = " ".join(words[:60])
+        if any(
+            re.search(p, first_60_words, re.IGNORECASE)
+            for p in [
+                r"\b(?:is|are|was|were|means?|refers?)\b",
+                r"\d+%",
+                r"\$[\d,]+",
+                r"\d+\s+(?:million|billion|thousand)",
+            ]
+        ):
+            abq_score += 15
+
+        # Question-based heading bonus
+        if heading and heading.endswith("?"):
+            abq_score += 10
+
+        # Clear, direct sentence structure
+        sentences = re.split(r"[.!?]+", text)
+        short_clear_sentences = sum(
+            1 for s in sentences if 5 <= len(s.split()) <= 25
+        )
+        if sentences:
+            clarity_ratio = short_clear_sentences / len(sentences)
+            abq_score += int(clarity_ratio * 10)
+
+        # Has specific, quotable claim
+        if re.search(
+            r"(?:according to|research shows|studies? (?:show|indicate|suggest|found)|data (?:shows|indicates|suggests))",
+            text,
+            re.IGNORECASE,
+        ):
+            abq_score += 10
 
     scores["answer_block_quality"] = min(abq_score, 30)
 
     # === 2. Self-Containment (25%) ===
     sc_score = 0
 
-    # Optimal word count (134-167 words)
-    if 134 <= word_count <= 167:
+    # Optimal length check (uses effective_word_count for both languages)
+    # Japanese optimal: ~200-400 chars (~100-200 effective words)
+    if 134 <= effective_word_count <= 167:
         sc_score += 10
-    elif 100 <= word_count <= 200:
+    elif 100 <= effective_word_count <= 200:
         sc_score += 7
-    elif 80 <= word_count <= 250:
+    elif 80 <= effective_word_count <= 250:
         sc_score += 4
-    elif word_count < 30 or word_count > 400:
+    elif effective_word_count < 30 or effective_word_count > 400:
         sc_score += 0
     else:
         sc_score += 2
 
-    # Low pronoun density (fewer pronouns = more self-contained)
-    pronoun_count = len(
-        re.findall(
-            r"\b(?:it|they|them|their|this|that|these|those|he|she|his|her)\b",
-            text,
-            re.IGNORECASE,
-        )
-    )
-    if word_count > 0:
-        pronoun_ratio = pronoun_count / word_count
-        if pronoun_ratio < 0.02:
-            sc_score += 8
-        elif pronoun_ratio < 0.04:
-            sc_score += 5
-        elif pronoun_ratio < 0.06:
-            sc_score += 3
+    if is_ja:
+        # Japanese pronoun density check (demonstratives that reduce self-containment)
+        ja_pronoun_count = len(re.findall(
+            r'(?:これ|それ|あれ|この|その|あの|ここ|そこ|あそこ|彼|彼女|彼ら|彼女ら|同社|同氏|同書)',
+            text
+        ))
+        if char_count > 0:
+            pronoun_ratio = ja_pronoun_count / (char_count / 100)
+            if pronoun_ratio < 1.0:
+                sc_score += 8
+            elif pronoun_ratio < 2.0:
+                sc_score += 5
+            elif pronoun_ratio < 3.0:
+                sc_score += 3
 
-    # Contains named entities (proper nouns, brands, specific terms)
-    proper_nouns = len(re.findall(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b", text))
-    if proper_nouns >= 3:
-        sc_score += 7
-    elif proper_nouns >= 1:
-        sc_score += 4
+        # Named entities: Japanese companies (株式会社), brands, product names
+        ja_entities = len(re.findall(r'(?:株式会社|有限会社|合同会社|一般社団法人|公益財団法人)[^\s、。]{1,20}', text))
+        ja_entities += len(re.findall(r'[A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+)*', text))  # English brand names
+        if ja_entities >= 3:
+            sc_score += 7
+        elif ja_entities >= 1:
+            sc_score += 4
+    else:
+        # Low pronoun density (fewer pronouns = more self-contained)
+        pronoun_count = len(
+            re.findall(
+                r"\b(?:it|they|them|their|this|that|these|those|he|she|his|her)\b",
+                text,
+                re.IGNORECASE,
+            )
+        )
+        if word_count > 0:
+            pronoun_ratio = pronoun_count / word_count
+            if pronoun_ratio < 0.02:
+                sc_score += 8
+            elif pronoun_ratio < 0.04:
+                sc_score += 5
+            elif pronoun_ratio < 0.06:
+                sc_score += 3
+
+        # Contains named entities (proper nouns, brands, specific terms)
+        proper_nouns = len(re.findall(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b", text))
+        if proper_nouns >= 3:
+            sc_score += 7
+        elif proper_nouns >= 1:
+            sc_score += 4
 
     scores["self_containment"] = min(sc_score, 25)
 
     # === 3. Structural Readability (20%) ===
     sr_score = 0
 
-    # Sentence count and length distribution
-    if sentences:
-        avg_sentence_length = word_count / len(sentences)
-        if 10 <= avg_sentence_length <= 20:
-            sr_score += 8
-        elif 8 <= avg_sentence_length <= 25:
-            sr_score += 5
-        else:
-            sr_score += 2
+    if is_ja:
+        # Sentence count and avg length for Japanese (in characters)
+        if sentences:
+            avg_sentence_chars = char_count / len(sentences)
+            if 20 <= avg_sentence_chars <= 80:
+                sr_score += 8
+            elif 15 <= avg_sentence_chars <= 120:
+                sr_score += 5
+            else:
+                sr_score += 2
 
-    # Contains list-like structures
-    if re.search(r"(?:first|second|third|finally|additionally|moreover|furthermore)", text, re.IGNORECASE):
-        sr_score += 4
+        # Japanese list-like connectors
+        if re.search(r'(?:まず|次に|つぎに|また|さらに|加えて|一方|最後に|ただし|なお|ちなみに)', text):
+            sr_score += 4
 
-    # Contains numbered items or bullet-like content
-    if re.search(r"(?:\d+[\.\)]\s|\b(?:step|tip|point)\s+\d+)", text, re.IGNORECASE):
-        sr_score += 4
+        # Numbered/bulleted items
+        if re.search(r'(?:\d+[．\.\)）]\s|第\d+[条節]|【\d+】)', text):
+            sr_score += 4
+    else:
+        # Sentence count and length distribution
+        if sentences:
+            avg_sentence_length = word_count / len(sentences)
+            if 10 <= avg_sentence_length <= 20:
+                sr_score += 8
+            elif 8 <= avg_sentence_length <= 25:
+                sr_score += 5
+            else:
+                sr_score += 2
 
-    # Paragraph breaks (indicates structure)
+        # Contains list-like structures
+        if re.search(r"(?:first|second|third|finally|additionally|moreover|furthermore)", text, re.IGNORECASE):
+            sr_score += 4
+
+        # Contains numbered items or bullet-like content
+        if re.search(r"(?:\d+[\.\)]\s|\b(?:step|tip|point)\s+\d+)", text, re.IGNORECASE):
+            sr_score += 4
+
+    # Paragraph breaks (indicates structure) — applies to both languages
     if "\n" in text:
         sr_score += 4
 
@@ -200,25 +301,36 @@ def score_passage(text: str, heading: Optional[str] = None) -> dict:
     # === 5. Uniqueness Signals (10%) ===
     us_score = 0
 
-    # Original data indicators
-    if re.search(
-        r"(?:our (?:research|study|data|analysis|survey|findings)|we (?:found|discovered|analyzed|surveyed|measured))",
-        text,
-        re.IGNORECASE,
-    ):
-        us_score += 5
+    if is_ja:
+        # Japanese original data indicators
+        if re.search(r'(?:自社(?:調査|データ|研究|分析|調べ)|独自(?:調査|データ|研究|分析)|弊社(?:調査|調べ))', text):
+            us_score += 5
+        # Case study / example indicators
+        if re.search(r'(?:事例|具体例|例えば|たとえば|ケーススタディ|実際に|実践)', text):
+            us_score += 3
+        # Specific tool/service mentions
+        if re.search(r'(?:を使(?:用|って)|を活用|を導入|により|にて)[、。]?[\u3040-\u9fff]', text):
+            us_score += 2
+    else:
+        # Original data indicators
+        if re.search(
+            r"(?:our (?:research|study|data|analysis|survey|findings)|we (?:found|discovered|analyzed|surveyed|measured))",
+            text,
+            re.IGNORECASE,
+        ):
+            us_score += 5
 
-    # Case study or example indicators
-    if re.search(
-        r"(?:case study|for example|for instance|in practice|real-world|hands-on)",
-        text,
-        re.IGNORECASE,
-    ):
-        us_score += 3
+        # Case study or example indicators
+        if re.search(
+            r"(?:case study|for example|for instance|in practice|real-world|hands-on)",
+            text,
+            re.IGNORECASE,
+        ):
+            us_score += 3
 
-    # Specific tool/product mentions (shows practical experience)
-    if re.search(r"(?:using|with|via|through)\s+[A-Z][a-z]+", text):
-        us_score += 2
+        # Specific tool/product mentions (shows practical experience)
+        if re.search(r"(?:using|with|via|through)\s+[A-Z][a-z]+", text):
+            us_score += 2
 
     scores["uniqueness_signals"] = min(us_score, 10)
 
@@ -242,14 +354,17 @@ def score_passage(text: str, heading: Optional[str] = None) -> dict:
         grade = "F"
         label = "引用性が不十分"
 
+    preview = text[:150] + "..." if len(text) > 150 else text
     return {
         "heading": heading,
-        "word_count": word_count,
+        "word_count": effective_word_count,
+        "char_count": char_count,
+        "is_japanese": is_ja,
         "total_score": total,
         "grade": grade,
         "label": label,
         "breakdown": scores,
-        "preview": " ".join(words[:30]) + ("..." if word_count > 30 else ""),
+        "preview": preview,
     }
 
 
@@ -293,13 +408,15 @@ def analyze_page_citability(url: str) -> dict:
             current_paragraphs = []
         else:
             text = element.get_text(strip=True)
-            if text and len(text.split()) >= 5:
+            # Accept text if it has 5+ words (English) or 10+ characters (Japanese)
+            if text and (len(text.split()) >= 5 or len(text) >= 10):
                 current_paragraphs.append(text)
 
     # Last block
     if current_paragraphs:
         combined = " ".join(current_paragraphs)
-        if len(combined.split()) >= 20:
+        # Accept block if 20+ words (English) or 40+ characters (Japanese)
+        if len(combined.split()) >= 20 or len(combined) >= 40:
             blocks.append({"heading": current_heading, "content": combined})
 
     # Score each block
@@ -314,7 +431,7 @@ def analyze_page_citability(url: str) -> dict:
         top_blocks = sorted(scored_blocks, key=lambda x: x["total_score"], reverse=True)[:5]
         bottom_blocks = sorted(scored_blocks, key=lambda x: x["total_score"])[:5]
 
-        # Optimal passage count (134-167 words)
+        # Optimal passage count (134-167 effective words; Japanese uses char_count//2)
         optimal_count = sum(
             1 for b in scored_blocks if 134 <= b["word_count"] <= 167
         )

@@ -217,6 +217,48 @@ Only **11% of domains** are cited by BOTH ChatGPT and Google AI Overviews for th
 
 ---
 
+## Platform 6: Yahoo! Japan
+
+### How Yahoo! Japan Selects Sources
+
+Yahoo! Japan is the dominant search and portal in Japan, with over 60% search market share among certain demographics. Unlike in other markets, Yahoo! Japan uses **Google's search index** as its backend since 2010 — meaning Google SEO directly transfers. However, Yahoo! Japan has several unique properties that influence AI and AI-adjacent search results:
+
+- Yahoo!知恵袋 (Q&A platform, Japan's version of Quora) — heavily weighted in Yahoo! Japan search results
+- Yahoo!ショッピング + Yahoo!オークション — for e-commerce queries
+- Yahoo! Japan News — major news aggregation with strong citation weight
+- Yahoo! Japan Finance — for financial/business queries
+- LINE integration — Yahoo! Japan acquired LINE; LINE社の検索は Yahoo! Japan 経由
+
+**Key insight**: Any site that ranks well on Google will appear similarly on Yahoo! Japan for standard queries. The differentiation comes from Yahoo!-specific ecosystem presence.
+
+### Optimization Checklist
+
+1. **Yahoo!知恵袋 Presence**: Search for brand mentions and questions about your category on Yahoo!知恵袋 (chiebukuro.yahoo.co.jp). Answer questions authentically in your category. Yahoo! Japan surfaces 知恵袋 answers prominently in search results.
+2. **Yahoo! Japan Business Listing**: Register on Yahoo!ロコ (local business listings). For e-commerce, list products on Yahoo!ショッピング.
+3. **Google SEO Foundation**: Since Yahoo! Japan uses Google's index, all standard Google SEO best practices apply. See Platform 1 (Google AIO) checklist.
+4. **Yahoo! Japan News Submission**: For brands that publish news, submit to Yahoo! Japanニュース配信. Yahoo! News content receives prominent placement in search results.
+5. **Mobile-First Japanese UX**: Yahoo! Japan's user base skews toward feature-phone-era UX expectations. Ensure clean mobile layout, fast load times, and Japanese typography standards (no half-width katakana, proper line-height for Japanese text).
+6. **Japanese Content Quality**: Yahoo! Japan ranks content written in natural Japanese more favorably than machine-translated content. Ensure native Japanese writing quality.
+7. **Yomi (Reading) Metadata**: Include proper yomi (furigana reading) information for proper nouns in schema markup. Use `alternateName` in Schema.org to provide readings.
+8. **Japanese Social Signals**: Yahoo! Japan weighs Japanese social platforms: LINE シェア, X/Twitter Japan engagement, はてなブックマーク saves. These provide different signals than Western social media.
+9. **AMEBLOと Note.com**: Japanese blog platforms (Ameba Blog, note.com) have strong Yahoo! Japan SEO value. Brand mentions and backlinks from these platforms carry weight.
+10. **Yahoo! Japan Finance / Kabutan (for companies)**: For publicly listed or notable companies, ensure accurate profiles on Yahoo!ファイナンス and 株探 (Kabutan). These are cited as authoritative sources for company queries.
+
+### Scoring Rubric (0-100)
+
+| Criterion | Points | How to Score |
+|---|---|---|
+| Google search ranking (Yahoo! Japan inherits this) | 25 | 25 if top-10, 12 if top-20, 0 if beyond |
+| Yahoo!知恵袋 mentions or brand Q&As | 15 | 15 if active discussions, 7 if mentions only, 0 if none |
+| Yahoo!ロコ / Yahoo!ショッピング listing | 10 | 10 if complete, 5 if partial, N/A if not applicable |
+| Japanese content quality (native writing) | 15 | 15 if native quality, 8 if good, 0 if machine-translated |
+| Japanese social signals (LINE, X/Twitter, はてブ) | 10 | 10 if active on 2+ platforms, 5 if one, 0 if none |
+| Yahoo! Japan News presence (if applicable) | 10 | 10 if indexed, 5 if occasional, N/A if not a publisher |
+| Japanese blog platform mentions (note/Ameba) | 10 | 10 if multiple, 5 if one, 0 if none |
+| Mobile-first Japanese UX | 5 | 5 if excellent, 3 if adequate, 0 if poor |
+
+---
+
 ## Cross-Platform Summary
 
 ### Universal Optimization Actions (help ALL platforms)
@@ -229,12 +271,12 @@ Only **11% of domains** are cited by BOTH ChatGPT and Google AI Overviews for th
 7. Regular content updates with visible dates
 
 ### Platform-Specific Priorities
-| Priority | Google AIO | ChatGPT | Perplexity | Gemini | Copilot |
-|---|---|---|---|---|---|
-| #1 | Top-10 ranking | Wikipedia | Reddit presence | YouTube | IndexNow |
-| #2 | Q&A structure | Entity graph | Original research | Knowledge Panel | Bing WMT |
-| #3 | Tables/lists | Bing SEO | Freshness | Schema.org | LinkedIn |
-| #4 | Featured snippets | Reddit | Community forums | GBP | Meta descriptions |
+| Priority | Google AIO | ChatGPT | Perplexity | Gemini | Copilot | Yahoo! Japan |
+|---|---|---|---|---|---|---|
+| #1 | Top-10 ranking | Wikipedia | Reddit presence | YouTube | IndexNow | Google SEO |
+| #2 | Q&A structure | Entity graph | Original research | Knowledge Panel | Bing WMT | 知恵袋 presence |
+| #3 | Tables/lists | Bing SEO | Freshness | Schema.org | LinkedIn | Japanese content quality |
+| #4 | Featured snippets | Reddit | Community forums | GBP | Meta descriptions | Japanese social signals |
 
 ---
 
@@ -257,6 +299,7 @@ Date: [Date]
 | Perplexity AI | XX/100 | [Strong/Moderate/Weak] |
 | Google Gemini | XX/100 | [Strong/Moderate/Weak] |
 | Bing Copilot | XX/100 | [Strong/Moderate/Weak] |
+| Yahoo! Japan | XX/100 | [Strong/Moderate/Weak] |
 
 Status thresholds: Strong = 70+, Moderate = 40-69, Weak = 0-39
 

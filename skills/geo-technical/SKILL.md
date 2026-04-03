@@ -104,11 +104,19 @@ Check robots.txt for directives targeting these AI crawlers:
 - Preferred: use `rel="canonical"` on paginated pages pointing to a view-all page or the first page
 - Ensure paginated pages are not noindexed if they contain unique content
 
-### 2.4 Hreflang (international sites)
+### 2.4 Hreflang (international sites and Japanese market)
 - Check for `<link rel="alternate" hreflang="xx">` tags
 - Validate: reciprocal hreflang (if page A points to page B, B must point back to A)
 - Validate: x-default fallback exists
 - Check for language/region code validity (ISO 639-1 / ISO 3166-1)
+
+**Japan-specific hreflang guidance:**
+- Use `hreflang="ja"` for Japanese-language content (language only, no region restriction)
+- Use `hreflang="ja-JP"` only when serving content exclusively to Japan IPs (e.g., price pages with Japan-only pricing, geo-restricted services)
+- For sites targeting both Japan and overseas Japanese readers, `hreflang="ja"` is preferred over `ja-JP`
+- If the site has a Japanese version and an English version, both must cross-reference each other AND include `x-default` pointing to the primary language version
+- Common mistake: setting `hreflang="ja-JP"` instead of `hreflang="ja"` — this restricts crawl to Japan-located users only, missing overseas Japanese audiences
+- AI systems (especially Claude and ChatGPT) use hreflang signals to understand content language; correctly tagged Japanese pages are more likely to surface for Japanese-language queries
 
 ### 2.5 Index Bloat
 - Estimate number of indexed pages (check sitemap count, use `site:domain.com` estimate)
@@ -146,6 +154,36 @@ Check HTTP response headers for:
 | `Referrer-Policy` | `strict-origin-when-cross-origin` or stricter | Controls referrer data |
 | `Permissions-Policy` | Appropriate restrictions | Controls browser features |
 
+### 3.3 Japanese Legal Compliance — 特定商取引法 (Act on Specified Commercial Transactions)
+
+For any Japanese site that sells goods or services to consumers, the **特定商取引法に基づく表記** (Tokusho-ho disclosure page) is **legally required** and also a strong trust signal for AI citation.
+
+**Check for presence and completeness of 特定商取引法 disclosure:**
+- Look for a page at `/tokushotori`, `/tokusho`, `/legal`, or `/company/legal`
+- Check footer for a link labeled「特定商取引法に基づく表記」or「特商法」
+- Verify the page contains all required fields:
+
+| Required Field | Japanese Label | What to Check |
+|---|---|---|
+| Business operator name | 販売業者 | Full legal name (not just brand name) |
+| Representative name | 代表者名 | Full name of representative |
+| Address | 所在地 | Full address (not a PO box) |
+| Phone number | 電話番号 | Must be reachable during business hours |
+| Email address | メールアドレス | Contact email for inquiries |
+| Prices | 販売価格 | Includes consumption tax (消費税込) |
+| Delivery terms | 引渡し時期 | Estimated delivery time |
+| Payment methods | お支払い方法 | All accepted payment methods |
+| Return/refund policy | 返品・交換 | Conditions and deadline |
+| Additional fees | 追加費用 | Shipping fees, handling charges |
+
+**Why this matters for GEO**: AI models (especially Claude and Perplexity) assess trustworthiness before citing sources. A clearly marked and complete 特商法ページ is one of the strongest trust signals for Japanese B2C sites. Sites without it are often flagged as low-trust by AI systems evaluating Japanese e-commerce.
+
+**Scoring:**
+- All required fields present and accurate: 3 points
+- Partially complete (missing 1-2 fields): 1 point
+- Missing entirely: 0 points (flag as critical for e-commerce sites)
+- Not applicable (non-commercial/B2B/overseas-only site): N/A
+
 **Category Scoring:**
 | Check | Points |
 |---|---|
@@ -155,6 +193,9 @@ Check HTTP response headers for:
 | X-Frame-Options | 1 |
 | Referrer-Policy | 1 |
 | Content-Security-Policy | 1 |
+| 特定商取引法ページ（日本市場向けECサイト） | 3 |
+
+> Note: Adding 特商法 scoring increases the Security category maximum to 13 points. Adjust total score accordingly (max 103 with this addition, or renormalize).
 
 ---
 
