@@ -3,38 +3,38 @@
 </p>
 
 <p align="center">
-  <strong>GEO-first, SEO-supported.</strong> Optimize websites for AI-powered search engines<br/>
-  (ChatGPT, Claude, Perplexity, Gemini, Google AI Overviews) while maintaining traditional SEO foundations.
+  <strong>GEO ファースト、SEO サポート。</strong> ChatGPT・Claude・Perplexity・Gemini・Google AI Overviews など<br/>
+  AI検索エンジンへの最適化を、従来のSEO基盤を維持しながら実現します。
 </p>
 
 <p align="center">
-  AI search is eating traditional search. This tool optimizes for where traffic is going, not where it was.
+  AIがトラディショナルな検索を侵食しています。このツールは、トラフィックが「これから向かう場所」に最適化します。
 </p>
 
 ---
 
-## Why GEO Matters (2026)
+## なぜ GEO が重要なのか（2026年）
 
-| Metric | Value |
-|--------|-------|
-| GEO services market | $850M+ (projected $7.3B by 2031) |
-| AI-referred traffic growth | +527% year-over-year |
-| AI traffic conversion rate vs organic | 4.4x higher |
-| Gartner: search traffic drop by 2028 | -50% |
-| Brand mentions vs backlinks for AI | 3x stronger correlation |
-| Marketers investing in GEO | Only 23% |
+| 指標 | 値 |
+|------|-----|
+| GEO サービス市場規模 | 8.5億ドル以上（2031年には73億ドル予測） |
+| AI経由トラフィックの成長率 | 前年比 +527% |
+| AI流入のコンバージョン率（オーガニック比） | 4.4倍 |
+| Gartner予測：2028年までの検索トラフィック減少 | -50% |
+| バックリンクとの比較でのブランド言及の強さ | 3倍の相関 |
+| GEOに投資しているマーケター | わずか23% |
 
 ---
 
-## Quick Start
+## クイックスタート
 
-### One-Command Install (macOS/Linux)
+### ワンコマンドインストール（macOS / Linux）
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/zubair-trabzada/geo-seo-claude/main/install.sh | bash
 ```
 
-### Manual Install
+### 手動インストール
 
 ```bash
 git clone https://github.com/zubair-trabzada/geo-seo-claude.git
@@ -42,218 +42,218 @@ cd geo-seo-claude
 ./install.sh
 ```
 
-### Windows (Git Bash)
+### Windows（Git Bash）
 
-Requires [Git for Windows](https://git-scm.com/downloads) which includes Git Bash.
+[Git for Windows](https://git-scm.com/downloads)（Git Bash 同梱）が必要です。
 
 ```bash
-# Option 1: One-command install (run from Git Bash, not PowerShell/CMD)
+# 方法1：ワンコマンドインストール（PowerShell・CMD ではなく Git Bash で実行）
 curl -fsSL https://raw.githubusercontent.com/zubair-trabzada/geo-seo-claude/main/install-win.sh | bash
 
-# Option 2: Manual install
+# 方法2：手動インストール
 git clone https://github.com/zubair-trabzada/geo-seo-claude.git
 cd geo-seo-claude
 ./install-win.sh
 ```
 
-> **Note:** Right-click the folder and select "Open Git Bash here", or open Git Bash and navigate to the directory. Do not use PowerShell or Command Prompt.
+> **注意：** フォルダを右クリックして「Open Git Bash here」を選択するか、Git Bash を開いてディレクトリに移動してください。PowerShell や コマンドプロンプトは使用しないでください。
 
-### Requirements
+### 動作要件
 
-- Python 3.8+
+- Python 3.8 以上
 - Claude Code CLI
 - Git
-- Optional: Playwright (for screenshots)
+- 任意：Playwright（スクリーンショット機能用）
 
 ---
 
-## Commands
+## コマンド一覧
 
-Open Claude Code and use these commands:
+Claude Code を開いて以下のコマンドを使用します：
 
-| Command | What It Does |
-|---------|-------------|
-| `/geo audit <url>` | Full GEO + SEO audit with parallel subagents |
-| `/geo quick <url>` | 60-second GEO visibility snapshot |
-| `/geo citability <url>` | Score content for AI citation readiness |
-| `/geo crawlers <url>` | Check AI crawler access (robots.txt) |
-| `/geo llmstxt <url>` | Analyze or generate llms.txt |
-| `/geo brands <url>` | Scan brand mentions across AI-cited platforms |
-| `/geo platforms <url>` | Platform-specific optimization |
-| `/geo schema <url>` | Structured data analysis & generation |
-| `/geo technical <url>` | Technical SEO audit |
-| `/geo content <url>` | Content quality & E-E-A-T assessment |
-| `/geo report <url>` | Generate client-ready GEO report |
-| `/geo report-pdf` | Generate professional PDF report with charts & visualizations |
+| コマンド | 内容 |
+|---------|------|
+| `/geo audit <url>` | GEO + SEO 総合監査（並列サブエージェント使用） |
+| `/geo quick <url>` | 60秒で分かる GEO 可視性スナップショット |
+| `/geo citability <url>` | AI引用スコアの採点 |
+| `/geo crawlers <url>` | AIクローラーのアクセス状況確認（robots.txt 解析） |
+| `/geo llmstxt <url>` | llms.txt の分析・生成 |
+| `/geo brands <url>` | AI引用プラットフォームでのブランド言及スキャン |
+| `/geo platforms <url>` | プラットフォーム別最適化 |
+| `/geo schema <url>` | 構造化データの分析・生成 |
+| `/geo technical <url>` | テクニカル SEO 監査 |
+| `/geo content <url>` | コンテンツ品質・E-E-A-T 評価 |
+| `/geo report <url>` | クライアント向け GEO レポート生成 |
+| `/geo report-pdf` | グラフ・ビジュアライゼーション付き PDF レポート生成 |
 
 ---
 
-## Architecture
+## アーキテクチャ
 
 ```
 geo-seo-claude/
-├── geo/                          # Main skill orchestrator
-│   └── SKILL.md                  # Primary skill file with commands & routing
-├── skills/                       # 13 specialized sub-skills
-│   ├── geo-audit/                # Full audit orchestration & scoring
-│   ├── geo-citability/           # AI citation readiness scoring
-│   ├── geo-crawlers/             # AI crawler access analysis
-│   ├── geo-llmstxt/              # llms.txt standard analysis & generation
-│   ├── geo-brand-mentions/       # Brand presence on AI-cited platforms
-│   ├── geo-platform-optimizer/   # Platform-specific AI search optimization
-│   ├── geo-schema/               # Structured data for AI discoverability
-│   ├── geo-technical/            # Technical SEO foundations
-│   ├── geo-content/              # Content quality & E-E-A-T
-│   ├── geo-report/               # Client-ready markdown report generation
-│   ├── geo-report-pdf/           # Professional PDF report with charts
-│   ├── geo-prospect/             # CRM-lite prospect pipeline management
-│   ├── geo-proposal/             # Auto-generate client proposals
-│   └── geo-compare/              # Monthly delta tracking & progress reports
-├── agents/                       # 5 parallel subagents
-│   ├── geo-ai-visibility.md      # GEO audit, citability, crawlers, brands
-│   ├── geo-platform-analysis.md  # Platform-specific optimization
-│   ├── geo-technical.md          # Technical SEO analysis
-│   ├── geo-content.md            # Content & E-E-A-T analysis
-│   └── geo-schema.md             # Schema markup analysis
-├── scripts/                      # Python utilities
-│   ├── fetch_page.py             # Page fetching & parsing
-│   ├── citability_scorer.py      # AI citability scoring engine
-│   ├── brand_scanner.py          # Brand mention detection
-│   ├── llmstxt_generator.py      # llms.txt validation & generation
-│   └── generate_pdf_report.py    # PDF report generator (ReportLab)
-├── schema/                       # JSON-LD templates
-│   ├── organization.json         # Organization schema (with sameAs)
-│   ├── local-business.json       # LocalBusiness schema
-│   ├── article-author.json       # Article + Person schema (E-E-A-T)
-│   ├── software-saas.json        # SoftwareApplication schema
-│   ├── product-ecommerce.json    # Product schema with offers
-│   └── website-searchaction.json # WebSite + SearchAction schema
-├── install.sh                    # One-command installer
-├── uninstall.sh                  # Uninstaller
-├── requirements.txt              # Python dependencies
-└── README.md                     # This file
+├── geo/                          # メインスキルオーケストレーター
+│   └── SKILL.md                  # コマンド定義・ルーティング
+├── skills/                       # 13の専門サブスキル
+│   ├── geo-audit/                # 総合監査・スコアリング
+│   ├── geo-citability/           # AI引用スコアリング
+│   ├── geo-crawlers/             # AIクローラーアクセス解析
+│   ├── geo-llmstxt/              # llms.txt 標準の分析・生成
+│   ├── geo-brand-mentions/       # AI引用プラットフォームでのブランド存在感
+│   ├── geo-platform-optimizer/   # プラットフォーム別AI検索最適化
+│   ├── geo-schema/               # AI発見性のための構造化データ
+│   ├── geo-technical/            # テクニカルSEO基盤
+│   ├── geo-content/              # コンテンツ品質・E-E-A-T
+│   ├── geo-report/               # クライアント向けMarkdownレポート生成
+│   ├── geo-report-pdf/           # グラフ付きプロ仕様PDFレポート
+│   ├── geo-prospect/             # 営業パイプライン管理（CRM）
+│   ├── geo-proposal/             # クライアント提案書の自動生成
+│   └── geo-compare/              # 月次デルタ追跡・進捗レポート
+├── agents/                       # 5つの並列サブエージェント
+│   ├── geo-ai-visibility.md      # GEO監査・引用性・クローラー・ブランド
+│   ├── geo-platform-analysis.md  # プラットフォーム別最適化
+│   ├── geo-technical.md          # テクニカルSEO分析
+│   ├── geo-content.md            # コンテンツ・E-E-A-T 分析
+│   └── geo-schema.md             # スキーママークアップ分析
+├── scripts/                      # Python ユーティリティ
+│   ├── fetch_page.py             # ページ取得・解析
+│   ├── citability_scorer.py      # AI引用スコアリングエンジン
+│   ├── brand_scanner.py          # ブランド言及検出
+│   ├── llmstxt_generator.py      # llms.txt バリデーション・生成
+│   └── generate_pdf_report.py    # PDFレポート生成（ReportLab）
+├── schema/                       # JSON-LD テンプレート
+│   ├── organization.json         # Organization スキーマ（sameAs付き）
+│   ├── local-business.json       # LocalBusiness スキーマ
+│   ├── article-author.json       # Article + Person スキーマ（E-E-A-T）
+│   ├── software-saas.json        # SoftwareApplication スキーマ
+│   ├── product-ecommerce.json    # Product スキーマ（オファー付き）
+│   └── website-searchaction.json # WebSite + SearchAction スキーマ
+├── install.sh                    # ワンコマンドインストーラー
+├── uninstall.sh                  # アンインストーラー
+├── requirements.txt              # Python 依存パッケージ
+└── README.md                     # このファイル
 ```
 
 ---
 
-## Data Storage
+## データの保存場所
 
-The CRM and reporting skills (`/geo prospect`, `/geo proposal`, `/geo compare`) store runtime data outside the Claude Code directory:
+CRM・レポート系スキル（`/geo prospect`・`/geo proposal`・`/geo compare`）の実行データは Claude Code ディレクトリの外に保存されます：
 
 ```
 ~/.geo-prospects/
-├── prospects.json              # Client/prospect pipeline data
-├── proposals/                  # Generated proposal documents
+├── prospects.json              # クライアント・見込み客パイプラインデータ
+├── proposals/                  # 生成された提案書
 │   └── <domain>-proposal-<date>.md
-└── reports/                    # Monthly delta reports
+└── reports/                    # 月次デルタレポート
     └── <domain>-monthly-<YYYY-MM>.md
 ```
 
-This directory is **not removed** by the uninstaller — delete it manually if you no longer need your prospect data.
+このディレクトリはアンインストーラーでは**削除されません**。見込み客データが不要になった場合は手動で削除してください。
 
 ---
 
-## How It Works
+## 仕組み
 
-### Full Audit Flow
+### 総合監査のフロー
 
-When you run `/geo audit https://example.com`:
+`/geo audit https://example.com` を実行すると：
 
-1. **Discovery** — Fetches homepage, detects business type, crawls sitemap
-2. **Parallel Analysis** — Launches 5 subagents simultaneously:
-   - AI Visibility (citability, crawlers, llms.txt, brand mentions)
-   - Platform Analysis (ChatGPT, Perplexity, Google AIO readiness)
-   - Technical SEO (Core Web Vitals, SSR, security, mobile)
-   - Content Quality (E-E-A-T, readability, freshness)
-   - Schema Markup (detection, validation, generation)
-3. **Synthesis** — Aggregates scores, generates composite GEO Score (0-100)
-4. **Report** — Outputs prioritized action plan with quick wins
+1. **調査** — ホームページ取得・ビジネスタイプ検出・サイトマップクロール
+2. **並列分析** — 5つのサブエージェントを同時起動：
+   - AI可視性（引用性・クローラー・llms.txt・ブランド言及）
+   - プラットフォーム分析（ChatGPT・Perplexity・Google AIO 対応度）
+   - テクニカルSEO（Core Web Vitals・SSR・セキュリティ・モバイル）
+   - コンテンツ品質（E-E-A-T・可読性・鮮度）
+   - スキーママークアップ（検出・バリデーション・生成）
+3. **統合** — スコアを集計し、GEO 総合スコア（0〜100）を算出
+4. **レポート** — クイックウィン付きの優先アクションプランを出力
 
-### Scoring Methodology
+### スコアリング方式
 
-| Category | Weight |
-|----------|--------|
-| AI Citability & Visibility | 25% |
-| Brand Authority Signals | 20% |
-| Content Quality & E-E-A-T | 20% |
-| Technical Foundations | 15% |
-| Structured Data | 10% |
-| Platform Optimization | 10% |
-
----
-
-## Key Features
-
-### Citability Scoring
-Analyzes content blocks for AI citation readiness. Optimal AI-cited passages are 134-167 words, self-contained, fact-rich, and directly answer questions.
-
-### AI Crawler Analysis
-Checks robots.txt for 14+ AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.) and provides specific allow/block recommendations.
-
-### Brand Mention Scanning
-Brand mentions correlate 3x more strongly with AI visibility than backlinks. Scans YouTube, Reddit, Wikipedia, LinkedIn, and 7+ other platforms.
-
-### Platform-Specific Optimization
-Only 11% of domains are cited by both ChatGPT and Google AI Overviews for the same query. Provides tailored recommendations per platform.
-
-### llms.txt Generation
-Generates the emerging llms.txt standard file that helps AI crawlers understand your site structure.
-
-### Client-Ready Reports
-Generates professional GEO reports in markdown or PDF format. PDF reports include score gauges, bar charts, platform readiness visualizations, color-coded tables, and prioritized action plans — ready to deliver to clients.
+| カテゴリ | 重み |
+|----------|------|
+| AI 引用性・可視性 | 25% |
+| ブランド権威シグナル | 20% |
+| コンテンツ品質・E-E-A-T | 20% |
+| 技術的基盤 | 15% |
+| 構造化データ | 10% |
+| プラットフォーム最適化 | 10% |
 
 ---
 
-## Use Cases
+## 主な機能
 
-- **GEO Agencies** — Run client audits and generate deliverables
-- **Marketing Teams** — Monitor and improve AI search visibility
-- **Content Creators** — Optimize content for AI citations
-- **Local Businesses** — Get found by AI assistants
-- **SaaS Companies** — Improve entity recognition across AI platforms
-- **E-commerce** — Optimize product pages for AI shopping recommendations
+### 引用性スコアリング
+コンテンツブロックをAI引用の観点で採点します。AIに引用されやすいパッセージは134〜167語・自己完結・事実が豊富・質問に直接答える構成が最適です。
+
+### AIクローラー分析
+robots.txt を対象に14種類以上のAIクローラー（GPTBot・ClaudeBot・PerplexityBot 等）のアクセス状況を確認し、許可・ブロックの具体的な推奨設定を提示します。
+
+### ブランド言及スキャン
+ブランド言及はバックリンクの3倍AI可視性との相関があります。YouTube・Reddit・Wikipedia・LinkedIn・その他7つ以上のプラットフォームをスキャンします。
+
+### プラットフォーム別最適化
+同じクエリに対してChatGPTとGoogle AI Overviewsの両方から引用されているドメインは全体のわずか11%です。プラットフォームごとにカスタマイズされた推奨事項を提供します。
+
+### llms.txt 生成
+AIクローラーがサイト構造を把握するための新興標準ファイル llms.txt を自動生成します。
+
+### クライアント向けレポート
+Markdown または PDF 形式のプロ仕様 GEO レポートを生成します。PDF レポートにはスコアゲージ・棒グラフ・プラットフォーム対応状況のビジュアライゼーション・カラーコード付きテーブル・優先アクションプランが含まれ、そのままクライアントへ納品できます。
 
 ---
 
-## Uninstall
+## 活用シーン
+
+- **GEO 代理店** — クライアント監査の実施と成果物の生成
+- **マーケティングチーム** — AI検索での可視性のモニタリングと改善
+- **コンテンツクリエイター** — AIに引用されるコンテンツへの最適化
+- **地域ビジネス** — AIアシスタントに見つけてもらいやすい状態を作る
+- **SaaS 企業** — AIプラットフォーム全体でのエンティティ認知度を向上
+- **ECサイト** — AI購買推薦に向けた商品ページの最適化
+
+---
+
+## アンインストール
 
 ```bash
 ./uninstall.sh
 ```
 
-Or manually:
+手動で削除する場合：
 ```bash
 rm -rf ~/.claude/skills/geo ~/.claude/skills/geo-* ~/.claude/agents/geo-*.md
 ```
 
 ---
 
-## Want to Turn This Into a Business?
+## このツールをビジネスにしたい方へ
 
-The tool is free. Learning how to monetize it is where the community comes in.
+ツール自体は無料です。収益化の方法はコミュニティで学べます。
 
-**[Join the AI Workshop Community →](https://skool.com/aiworkshop)**
+**[AI Workshop コミュニティに参加する →](https://skool.com/aiworkshop)**
 
-Inside you'll get:
-- **Video walkthroughs** — Step-by-step setup, running audits, reading results
-- **Client acquisition playbook** — How to find prospects, pitch GEO services, and close deals
-- **Live office hours** — Bring your audit results, get direct help
-- **GEO agency pricing & templates** — Proposal docs, cold outreach scripts, onboarding workflows
+コミュニティでは以下を提供しています：
+- **動画チュートリアル** — セットアップ・監査の実施・結果の読み方をステップバイステップで解説
+- **クライアント獲得プレイブック** — 見込み客の発掘・GEOサービスの提案・クロージング方法
+- **ライブオフィスアワー** — 監査結果を持ち込んで直接サポートを受けられる
+- **GEO 代理店の価格設定＆テンプレート** — 提案書・アウトリーチスクリプト・オンボーディングワークフロー
 
-GEO agencies charge $2K–$12K/month. This tool does the audit. The community teaches you how to sell it.
+GEO 代理店の月額単価は $2,000〜$12,000。このツールが監査を担い、コミュニティが販売方法を教えます。
 
 ---
 
-## License
+## ライセンス
 
 MIT License
 
 ---
 
-## Contributing
+## コントリビューション
 
-Contributions welcome!
+コントリビューション歓迎です！
 
 ---
 
-Built for the AI search era.
+AI検索時代のために作られました。
