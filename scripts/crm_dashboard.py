@@ -63,13 +63,13 @@ STATUS_LABEL_JA = {
 def score_style(score: int) -> tuple[str, str]:
     """Returns (color, label) based on GEO score."""
     if score >= 80:
-        return "bold green",  "GOOD"
+        return "bold green",  "良好"
     elif score >= 60:
-        return "bold blue",   "MODERATE"
+        return "bold blue",   "普通"
     elif score >= 40:
-        return "bold yellow",  "POOR"
+        return "bold yellow",  "要改善"
     else:
-        return "bold red",    "CRITICAL"
+        return "bold red",    "要対応"
 
 def score_bar(score: int, width: int = 20) -> Text:
     """Renders a colored progress bar for a score."""
@@ -313,7 +313,7 @@ def main():
     if not prospects:
         return
 
-    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    now = datetime.now().strftime("%Y年%-m月%-d日 %H:%M")
 
     console.print()
     console.print(

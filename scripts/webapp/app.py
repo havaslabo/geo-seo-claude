@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 @app.context_processor
 def inject_now():
-    return {"now": datetime.now().strftime("%Y-%m-%d %H:%M")}
+    return {"now": datetime.now().strftime("%Y年%-m月%-d日 %H:%M")}
 
 CRM_PATH = Path.home() / ".geo-prospects" / "prospects.json"
 PROPOSALS_DIR = Path.home() / ".geo-prospects" / "proposals"
@@ -45,10 +45,10 @@ def score_tier(score: int) -> str:
     return "critical"
 
 def score_label(score: int) -> str:
-    if score >= 80: return "Good"
-    if score >= 60: return "Moderate"
-    if score >= 40: return "Poor"
-    return "Critical"
+    if score >= 80: return "良好"
+    if score >= 60: return "普通"
+    if score >= 40: return "要改善"
+    return "要対応"
 
 def format_eur(value) -> str:
     if not value:
@@ -81,9 +81,20 @@ def find_pdf(prospect: dict) -> Path | None:
 
 # ── Template filters ────────────────────────────────────────────────────
 
+def format_date(value: str) -> str:
+    """Convert YYYY-MM-DD to YYYY年M月D日."""
+    if not value:
+        return "—"
+    try:
+        dt = datetime.strptime(value[:10], "%Y-%m-%d")
+        return dt.strftime("%Y年%-m月%-d日")
+    except ValueError:
+        return value
+
 app.jinja_env.filters["score_tier"] = score_tier
 app.jinja_env.filters["score_label"] = score_label
 app.jinja_env.filters["format_eur"] = format_eur
+app.jinja_env.filters["format_date"] = format_date
 
 STATUS_META = {
     "lead":     {"icon": "⬜", "badge": "secondary",  "label": "リード"},

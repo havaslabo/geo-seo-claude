@@ -102,7 +102,7 @@
             <span class="score-num">{{ p.geo_score }}/100</span>
           </div>
         </td>
-        <td class="text-secondary" style="font-size:.83rem">{{ p.audit_date or '—' }}</td>
+        <td class="text-secondary" style="font-size:.83rem">{{ p.audit_date | format_date }}</td>
         <td class="text-end fw-semibold">{{ p.monthly_value | format_eur }}</td>
         <td class="text-center">
           {% if p.proposal_file %}

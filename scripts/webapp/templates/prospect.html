@@ -83,7 +83,7 @@
           <tr><td class="text-secondary">ID</td><td>{{ p.id }}</td></tr>
           <tr><td class="text-secondary">業界</td><td>{{ p.industry or '—' }}</td></tr>
           <tr><td class="text-secondary">国</td><td>{{ p.country or '—' }}</td></tr>
-          <tr><td class="text-secondary">監査日</td><td>{{ p.audit_date or '—' }}</td></tr>
+          <tr><td class="text-secondary">監査日</td><td>{{ p.audit_date | format_date }}</td></tr>
           <tr><td class="text-secondary">MRR</td>
               <td class="fw-semibold" style="color:#58a6ff">{{ p.monthly_value | format_eur }}</td></tr>
           <tr><td class="text-secondary">契約期間</td><td>{{ p.contract_months or '—' }} ヶ月</td></tr>
@@ -94,7 +94,7 @@
           <tr><td class="text-secondary">メール</td>
               <td><a href="mailto:{{ p.contact_email }}" class="text-info">{{ p.contact_email }}</a></td></tr>
           {% endif %}
-          <tr><td class="text-secondary">更新日</td><td>{{ p.updated_at or '—' }}</td></tr>
+          <tr><td class="text-secondary">更新日</td><td>{{ p.updated_at | format_date }}</td></tr>
         </tbody>
       </table>
     </div>
